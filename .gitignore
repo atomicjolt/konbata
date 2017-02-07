@@ -21,7 +21,6 @@
 /spec/examples/
 *.gem
 .idea/
-senkyoshi.iml
-senkyoshi.yml
+konbata.yml
 
 npm-debug.log

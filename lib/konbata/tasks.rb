@@ -19,15 +19,14 @@ module Konbata
     ##
     def self.install_tasks
       namespace :konbata do
-        desc "Generate a barebones Canvas course from source directory."
+        desc "Generate Canvas courses from folders in source directory."
         task :imscc do
-          Konbata.parse_course_directories
-          Konbata.create_courses
+          Konbata.convert_courses
         end
 
         desc "Destroy output folder."
         task :clean do
-          rm_rf OUTPUT_DIR
+          remove_entry_secure(OUTPUT_DIR)
         end
       end
     end
