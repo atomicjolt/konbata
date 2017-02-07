@@ -23,6 +23,10 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "pry-byebug", "~> 3.4"
   spec.add_development_dependency "minitest", "~> 5.9"
+  spec.add_development_dependency "minitest-reporters", "~> 1.1"
+  spec.add_development_dependency "guard"
+  spec.add_development_dependency "guard-minitest"
+  spec.add_development_dependency "guard-rubocop"
 
   [
     ["rake", "~> 11.3"],

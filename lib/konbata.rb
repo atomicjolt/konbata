@@ -1,46 +1,54 @@
-require_relative "konbata/course"
+require "konbata/configuration"
+require "konbata/models/course"
 
 module Konbata
+  INPUT_DIR = "sources".freeze
   OUTPUT_DIR = "output".freeze
-  # LIBRE_OFFICE_PATH =
-  #   "/Applications/LibreOffice.app/Contents/MacOS/soffice".freeze
-  #
-  # def self.convert_to_html
-  #   entries = Dir.glob("sources/**/*")
-  #
-  #   entries.each_with_index do |entry, index|
-  #     next unless File.extname(entry) =~ /^\.docx?$/i
-  #
-  #     Libreconv.convert(
-  #       entry,
-  #       File.dirname(entry),
-  #       LIBRE_OFFICE_PATH,
-  #       "html",
-  #     )
-  #
-  #     puts "#{index + 1}/#{entries.size} Finished #{entry}..."
-  #   end
-  # end
 
-  def self.parse_course_directories
-    entries = Dir.glob("sources/**/*")
+  def self.configuration
+    @configuration ||= Configuration.new
+  end
 
-    @courses = {}
+  ##
+  # Create a random hex prepended with aj_
+  # This is because the instructure qti migration tool requires
+  # the first character to be a letter.
+  ##
+  def self.create_random_hex
+    "aj_" + SecureRandom.hex(32)
+  end
 
-    entries.each do |entry|
+  def self.convert_courses
+    FileUtils.mkdir_p(OUTPUT_DIR)
+
+    docs = Dir.glob("#{INPUT_DIR}/**/*.{doc,docx}")
+
+    course_structures = generate_course_structures(docs)
+
+    course_structures.each do |course_code, volumes|
+      course = Konbata::Course.new(course_code, volumes)
+      create_imscc(course)
+    end
+  end
+
+  def self.create_imscc(course)
+    imscc = CanvasCc::CanvasCC::CartridgeCreator.
+      new(course.canvas_course).
+      create(Dir.mktmpdir)
+
+    FileUtils.cp(imscc, OUTPUT_DIR)
+  end
+
+  def self.generate_course_structures(entries)
+    entries.each_with_object({}) do |entry, courses|
       next unless File.file?(entry)
 
-      course = entry.split("/")[1].match(/Course - ([^,]+)/i)[1]
-      volume = entry.split("/")[1].match(/Volume (\d+)/i)[1]
+      course = entry[/Course - ([^,]+)/i, 1]
+      volume = entry[/Volume (\d+)/i, 1]
       file = File.absolute_path(entry)
 
-      @courses[course] ||= Hash.new([])
-      @courses[course][volume] |= [file]
-
-      destination = "#{OUTPUT_DIR}/Course #{course}/Volume #{volume}"
-
-      FileUtils.mkdir_p(destination)
-      FileUtils.cp(entry, destination)
+      courses[course] ||= Hash.new([])
+      courses[course][volume] |= [file]
     end
   end
 end
