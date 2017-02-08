@@ -1,5 +1,7 @@
 require "konbata/configuration"
 require "konbata/models/course"
+require "konbata/models/source_file"
+require "konbata/models/glossary_file"
 
 module Konbata
   INPUT_DIR = "sources".freeze

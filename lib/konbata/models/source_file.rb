@@ -1,5 +1,4 @@
 require "canvas_cc"
-require "konbata"
 
 module Konbata
   class SourceFile
@@ -9,6 +8,11 @@ module Konbata
       @file_path = file_path
       @volume = volume
       @canvas_file = _create_canvas_file
+      @html = _to_html
+    end
+
+    def convert(convas_course)
+      # TODO: Remove this noop once subclasses all have this defined.
     end
 
     private
@@ -24,6 +28,21 @@ module Konbata
       )
 
       canvas_file
+    end
+
+    def _to_html
+      output_dir = Dir.mktmpdir
+
+      Libreconv.convert(
+        @file_path,
+        output_dir,
+        Konbata.configuration.libre_office_path,
+        "html",
+      )
+
+      html_file_name = Dir.new(output_dir).detect { |file| file[/\.html$/i] }
+      html_file_path = File.join(output_dir, html_file_name)
+      File.open(html_file_path, "r", &:read)
     end
   end
 end

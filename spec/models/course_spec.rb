@@ -5,30 +5,39 @@ describe Konbata do
     @course_code = "course-code-001"
     volumes = {
       "1" => [
-        File.join("path", "to", "doc1.doc"),
-        File.join("path", "to", "doc2.docx"),
+        fixture_path("front.doc"),
       ],
       "2" => [
-        File.join("path", "to", "doc3.doc"),
-        File.join("path", "to", "doc4.docx"),
+        fixture_path("glos.doc"),
+        fixture_path("u1.doc"),
       ],
     }
 
-    @course = Konbata::Course.new(@course_code, volumes)
+    @course = MockCourse.new(@course_code, volumes)
   end
 
   describe "Course" do
     it "should create a canvas_cc course" do
-      canvas_course = @course.canvas_course
+      assert(@course.canvas_course.is_a?(CanvasCc::CanvasCC::Models::Course))
+    end
 
-      assert(canvas_course.is_a?(CanvasCc::CanvasCC::Models::Course))
-      assert_equal(@course_code, canvas_course.identifier)
-      assert_equal(@course_code, canvas_course.course_code)
-      assert_equal(@course_code, canvas_course.title)
-      assert_equal(4, canvas_course.files.size)
+    it "should give the canvas_cc course an identifier" do
+      assert_equal(@course_code, @course.canvas_course.identifier)
+    end
+
+    it "should give the canvas_cc course a course code" do
+      assert_equal(@course_code, @course.canvas_course.course_code)
+    end
+
+    it "should give the canvas_cc course a title" do
+      assert_equal(@course_code, @course.canvas_course.title)
+    end
+
+    it "should populate canvas_cc course with files" do
+      assert_equal(3, @course.canvas_course.files.size)
       assert_equal(
-        File.join("path", "to", "doc1.doc"),
-        canvas_course.files.first.file_location,
+        File.join(fixture_path("front.doc")),
+        @course.canvas_course.files.first.file_location,
       )
     end
   end
