@@ -10,14 +10,13 @@ describe Konbata do
     end
 
     it "should create a canvas_cc file on initialization" do
-      assert_equal(
-        CanvasCc::CanvasCC::Models::CanvasFile,
-        @source_file.canvas_file.class,
+      assert(
+        @source_file.canvas_file.is_a?(CanvasCc::CanvasCC::Models::CanvasFile),
       )
     end
 
     it "should give the canvas_cc file an identifier" do
-      assert(@source_file.canvas_file.identifier)
+      refute_nil(@source_file.canvas_file.identifier)
     end
 
     it "should give the canvas_cc file a file location" do

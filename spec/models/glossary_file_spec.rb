@@ -11,10 +11,7 @@ describe Konbata do
     it "should add a canvas_cc page to the canvas_cc course given" do
       assert_equal(1, @canvas_course.pages.size)
 
-      assert_equal(
-        CanvasCc::CanvasCC::Models::Page,
-        @canvas_course.pages.first.class,
-      )
+      assert(@canvas_course.pages.first.is_a?(CanvasCc::CanvasCC::Models::Page))
     end
 
     it "should give the canvas_cc page an identifier" do
