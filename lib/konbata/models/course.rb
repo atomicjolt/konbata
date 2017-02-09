@@ -1,7 +1,8 @@
 require "canvas_cc"
 require "konbata/models/module"
-require "konbata/models/source_file"
+require "konbata/models/cover_page_file"
 require "konbata/models/glossary_file"
+require "konbata/models/unit_file"
 
 module Konbata
   class Course
@@ -31,12 +32,14 @@ module Konbata
     def _instantiate_source_files
       @volumes.each do |volume, file_paths|
         file_paths.map! do |file_path|
-          if file_path[/glos/i]
+          if file_path[/front/i]
+            Konbata::CoverPageFile.new(file_path, volume)
+          elsif file_path[/glos/i]
             Konbata::GlossaryFile.new(file_path, volume)
-          else
-            Konbata::SourceFile.new(file_path, volume)
+          elsif file_path[/U\d+/i]
+            Konbata::UnitFile.new(file_path, volume)
           end
-        end
+        end.compact!
       end
     end
 
