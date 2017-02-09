@@ -1,17 +1,15 @@
 class MockCourse < Konbata::Course
-  def _create_source_files
-    source_files = []
-
+  def _instantiate_source_files
     @volumes.each do |volume, file_paths|
-      file_paths.each do |file_path|
-        if file_path[/glos/i]
-          source_files << MockGlossaryFile.new(file_path, volume)
-        else
-          source_files << MockSourceFile.new(file_path, volume)
+      file_paths.map! do |file_path|
+        if file_path[/front/i]
+          MockCoverPageFile.new(file_path, volume)
+        elsif file_path[/glos/i]
+          MockGlossaryFile.new(file_path, volume)
+        elsif file_path[/U\d+/i]
+          MockUnitFile.new(file_path, volume)
         end
-      end
+      end.compact!
     end
-
-    source_files
   end
 end

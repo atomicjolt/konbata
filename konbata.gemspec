@@ -32,6 +32,5 @@ Gem::Specification.new do |spec|
     ["rake", "~> 11.3"],
     ["nokogiri", "~> 1.6.6"],
     ["activesupport", "~> 4.2"],
-    ["canvas_cc", "~> 0.0.33"],
   ].each { |d| spec.add_runtime_dependency(*d) }
 end

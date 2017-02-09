@@ -1,10 +1,10 @@
 require "konbata/models/source_file"
 
 module Konbata
-  class GlossaryFile < Konbata::SourceFile
+  class CoverPageFile < Konbata::SourceFile
     def initialize(file_path, volume)
       super
-      @title = "Glossary (Vol. #{volume})"
+      @title = "Course Info (Vol. #{volume})"
     end
   end
 end
