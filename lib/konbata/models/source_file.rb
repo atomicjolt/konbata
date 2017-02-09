@@ -1,4 +1,6 @@
 require "canvas_cc"
+require "libreconv"
+require "konbata/models/module_item"
 
 module Konbata
   class SourceFile
@@ -9,10 +11,27 @@ module Konbata
       @volume = volume
       @canvas_file = _create_canvas_file
       @html = _to_html
+      # @title may be overwritten by subclass.
+      @title = File.basename(file_path).
+        sub(/\.docx?$/i, ""). # Remove .doc or .docx file extension.
+        sub(/\(\d{1,2}\)/, ""). # Remove (1), (2), etc. in file name.
+        strip
     end
 
-    def convert(convas_course)
-      # TODO: Remove this noop once subclasses all have this defined.
+    def convert(canvas_course, canvas_module)
+      page = CanvasCc::CanvasCC::Models::Page.new
+      page.identifier = Konbata.create_random_hex
+      page.workflow_state = "active"
+      page.page_name = @title
+      page.body = @html
+
+      module_item = Konbata::ModuleItem.create(
+        @title,
+        page.identifier,
+      )
+
+      canvas_module.module_items << module_item
+      canvas_course.pages << page
     end
 
     private
