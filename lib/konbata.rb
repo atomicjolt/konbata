@@ -6,6 +6,7 @@ require "konbata/models/course"
 module Konbata
   INPUT_DIR = "sources".freeze
   OUTPUT_DIR = "output".freeze
+  FILE_BASE = "$IMS_CC_FILEBASE$".freeze
 
   def self.configuration
     @configuration ||= Configuration.new
