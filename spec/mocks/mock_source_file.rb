@@ -1,5 +1,5 @@
 class MockSourceFile < Konbata::SourceFile
-  def _to_html
-    "<html>Source file converted to HTML</html>"
+  def _convert_to_html
+    Pathname.new(fixture_path(File.join("source_file_html")))
   end
 end

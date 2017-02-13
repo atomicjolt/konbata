@@ -1,5 +1,5 @@
 class MockCoverPageFile < Konbata::CoverPageFile
-  def _to_html
-    "<html>Cover page file converted to HTML</html>"
+  def _convert_to_html
+    Pathname.new(fixture_path(File.join("cover_page_html")))
   end
 end

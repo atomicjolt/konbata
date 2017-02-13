@@ -6,8 +6,6 @@ module Konbata
   class Tasks
     extend Rake::DSL if defined? Rake::DSL
 
-    OUTPUT_DIR = "output".freeze
-
     ##
     # Creates rake tasks that can be ran from the gem.
     #

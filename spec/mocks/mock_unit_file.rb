@@ -1,5 +1,5 @@
 class MockUnitFile < Konbata::UnitFile
-  def _to_html
-    "<html>Unit file converted to HTML</html>"
+  def _convert_to_html
+    Pathname.new(fixture_path(File.join("unit_html")))
   end
 end
