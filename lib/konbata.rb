@@ -1,8 +1,10 @@
 require "canvas_cc"
+require "zip"
 
 require "konbata/configuration"
 require "konbata/reporter"
-require "konbata/models/course"
+require "konbata/models/canvas_course"
+require "konbata/models/upload_course"
 
 module Konbata
   INPUT_DIR = "sources".freeze
@@ -58,5 +60,11 @@ module Konbata
       courses[course] ||= Hash.new([])
       courses[course][volume] |= [file]
     end
+  end
+
+  def self.initialize_course(canvas_file_path)
+    metadata = Konbata::UploadCourse.metadata_from_file(canvas_file_path)
+    course = Konbata::UploadCourse.from_metadata(metadata)
+    course.upload_content(canvas_file_path)
   end
 end
