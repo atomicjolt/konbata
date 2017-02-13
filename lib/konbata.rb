@@ -1,6 +1,7 @@
 require "canvas_cc"
 
 require "konbata/configuration"
+require "konbata/reporter"
 require "konbata/models/course"
 
 module Konbata
@@ -28,9 +29,13 @@ module Konbata
 
     course_structures = generate_course_structures(docs)
 
-    course_structures.each do |course_code, volumes|
+    course_structures.each_with_index do |(course_code, volumes), index|
+      Konbata::Reporter.start_course(course_code, index, course_structures.size)
+
       course = Konbata::Course.new(course_code, volumes)
       create_imscc(course)
+
+      Konbata::Reporter.complete_course(course_code)
     end
   end
 

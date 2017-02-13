@@ -12,3 +12,8 @@ require_relative "../mocks/mock_unit_file"
 def fixture_path(fixture)
   File.absolute_path(File.join("spec", "fixtures", fixture))
 end
+
+# Suppress reporting.
+module Kernel
+  def puts(*); end
+end
