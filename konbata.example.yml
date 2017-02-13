@@ -1,2 +1,7 @@
 # Generally looks like /Applications/LibreOffice.app/Contents/MacOS/soffice
 :libre_office_path: <LibreOffice Path>
+
+:canvas_url: <canvas instance api url>
+:canvas_token: <canvas token>
+:account_id: <account id>
+:request_timeout: <request timeout seconds>
