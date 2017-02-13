@@ -1,4 +1,5 @@
 require "canvas_cc"
+require "konbata/reporter"
 require "konbata/models/module"
 require "konbata/models/cover_page_file"
 require "konbata/models/glossary_file"
@@ -57,10 +58,24 @@ module Konbata
 
         source_files.each do |source_file|
           source_file.convert(canvas_course, canvas_module)
+
+          Konbata::Reporter.complete_source_file(
+            _source_file_index(source_file),
+            _source_files_count,
+          )
         end
 
         canvas_course.canvas_modules << canvas_module
       end
+    end
+
+    def _source_files_count
+      @volumes.reduce(0) { |total, (_volume, files)| total + files.size }
+    end
+
+    def _source_file_index(source_file)
+      @all_files ||= @volumes.reduce([]) { |all, (_volume, files)| all + files }
+      @all_files.index(source_file)
     end
   end
 end
