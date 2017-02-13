@@ -81,6 +81,7 @@ module Konbata
     ##
     # Returns the contents of the HTML file in the output_dir as text.
     # Also changes any <img> tags `src` attributes to the correct path.
+    # Ensures no elements are absolutely positioned.
     ##
     def _html_text(output_dir)
       html_file = output_dir.children.detect do |file|
@@ -93,7 +94,7 @@ module Konbata
         image_tag["src"] = fixed_src
       end
 
-      node_html.to_s
+      node_html.to_s.gsub(/position: absolute;?/i, "")
     end
 
     ##
