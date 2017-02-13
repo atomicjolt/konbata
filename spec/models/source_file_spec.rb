@@ -29,13 +29,6 @@ describe Konbata do
         assert_equal("active", @canvas_course.pages.first.workflow_state)
       end
 
-      it "should give the page a body" do
-        assert_includes(
-          @canvas_course.pages.first.body,
-          "<html>Source file converted to HTML</html>",
-        )
-      end
-
       it "should create a canvas_cc module item and add it to the module" do
         assert(
           @canvas_module.module_items.first.is_a?(
@@ -71,6 +64,38 @@ describe Konbata do
           File.join("Volume 2", File.basename(@file_path)),
           @source_file.canvas_file.file_path,
         )
+      end
+    end
+
+    describe "_html_text" do
+      it "should return HTML content" do
+        assert_includes(
+          @canvas_course.pages.first.body,
+          "Source file converted to HTML",
+        )
+      end
+
+      it "should give src attributes the correct path" do
+        node_html = Nokogiri::HTML.fragment(@canvas_course.pages.first.body)
+
+        node_html.search("img").each do |image_tag|
+          assert_includes(image_tag["src"], "IMS_CC_FILEBASE")
+          assert_includes(image_tag["src"], "source_file_images")
+        end
+      end
+    end
+
+    describe "_copy_html_images" do
+      it "should add HTML images to the canvas course" do
+        assert_equal(2, @canvas_course.files.size)
+      end
+
+      it "should create and populate a canvas_cc file for HTML images" do
+        first_file = @canvas_course.files.first
+
+        assert(first_file.is_a?(CanvasCc::CanvasCC::Models::CanvasFile))
+        refute_nil(first_file.identifier)
+        assert(first_file.hidden)
       end
     end
   end
