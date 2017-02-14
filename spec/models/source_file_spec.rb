@@ -83,6 +83,10 @@ describe Konbata do
           assert_includes(image_tag["src"], "source_file_images")
         end
       end
+
+      it "should remove absolute positioning CSS" do
+        refute_includes(@canvas_course.pages.first.body, "position: absolute;")
+      end
     end
 
     describe "_copy_html_images" do
