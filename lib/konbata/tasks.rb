@@ -2,14 +2,13 @@ require "rake"
 require "rake/clean"
 require "konbata"
 
-OUTPUT_DIR = "output".freeze
 UPLOAD_DIR = "uploaded".freeze
 
 ## Don't change these, these are just getting the last
 ## of the folder name for the script below to use
-OUTPUT_NAME = OUTPUT_DIR.split("/").last
+OUTPUT_NAME = Konbata::OUTPUT_DIR.split("/").last
 UPLOAD_NAME = UPLOAD_DIR.split("/").last
-CONVERTED_FILES = Rake::FileList.new("#{OUTPUT_DIR}/*.imscc")
+CONVERTED_FILES = Rake::FileList.new("#{Konbata::OUTPUT_DIR}/*.imscc")
 
 ##
 # Creates rake tasks that can be ran from the gem.
@@ -23,7 +22,7 @@ CONVERTED_FILES = Rake::FileList.new("#{OUTPUT_DIR}/*.imscc")
 
 def source_for_upload_log(upload_log)
   CONVERTED_FILES.detect do |f|
-    path = upload_log.pathmap("%{^#{UPLOAD_DIR}/,#{OUTPUT_DIR}/}X")
+    path = upload_log.pathmap("%{^#{UPLOAD_DIR}/,#{Konbata::OUTPUT_DIR}/}X")
     f.ext("") == path
   end
 end
@@ -64,7 +63,7 @@ module Konbata
 
         desc "Destroy output folder."
         task :clean do
-          remove_entry_secure(OUTPUT_DIR)
+          remove_entry_secure(Konbata::OUTPUT_DIR)
         end
       end
     end
