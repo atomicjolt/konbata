@@ -2,10 +2,10 @@ require "yaml"
 
 module Konbata
   class Configuration
-    attr_accessor :canvas_url
-    attr_accessor :canvas_token
-    attr_accessor :account_id
-    attr_accessor :request_timeout
+    attr_reader :canvas_url
+    attr_reader :canvas_token
+    attr_reader :account_id
+    attr_reader :request_timeout
     attr_reader :libre_office_path
     DEFAULT_TIMEOUT = 1_800 # 30 minutes
 
