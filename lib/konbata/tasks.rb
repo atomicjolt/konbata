@@ -63,7 +63,9 @@ module Konbata
 
         desc "Destroy output folder."
         task :clean do
-          remove_entry_secure(Konbata::OUTPUT_DIR)
+          if Dir.exist?(Konbata::OUTPUT_DIR)
+            remove_entry_secure(Konbata::OUTPUT_DIR)
+          end
         end
       end
     end
