@@ -51,7 +51,7 @@ module Konbata
       )
       UploadCourse.new(course_resource)
     end
-    
+
     ##
     # Create a migration for the course
     # and upload the imscc file to be imported into the course
