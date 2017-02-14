@@ -35,13 +35,14 @@ module Konbata
         token: Konbata.configuration.canvas_token,
       )
     end
+
     ##
     # Find or Create a new CanvasCourse instance from the given metadata
     ##
     def self.from_metadata(metadata)
       course_title = metadata[:title]
-      #TODO: Actually use the course_code somewhere
-      course_code = metadata[:course_code]
+      # TODO: Actually use the course_code somewhere
+      # course_code = metadata[:course_code]
       course_resource = client.create_new_course(
         Konbata.configuration.account_id,
         course: {
@@ -50,6 +51,7 @@ module Konbata
       )
       UploadCourse.new(course_resource)
     end
+    
     ##
     # Create a migration for the course
     # and upload the imscc file to be imported into the course
