@@ -47,8 +47,16 @@ module Konbata
     FileUtils.cp(imscc, OUTPUT_DIR)
   end
 
+  ##
+  # Returns a hash where each key is the course code and each value for the
+  # course code is a nested hash.
+  # The nested hashes have volume numbers for keys and an array of source file
+  # paths for that volume as the values.
+  # It also sorts the file path arrays so that module items are created and
+  # added in the right order.
+  ##
   def self.generate_course_structures(entries)
-    entries.each_with_object({}) do |entry, courses|
+    course_structures = entries.each_with_object({}) do |entry, courses|
       next unless File.file?(entry)
 
       course = entry[/Course - ([^,]+)/i, 1]
@@ -57,6 +65,14 @@ module Konbata
 
       courses[course] ||= Hash.new([])
       courses[course][volume] |= [file]
+    end
+
+    course_structures.each do |_course_code, volumes|
+      volumes.each do |_volume, file_paths|
+        file_paths.sort! do |a, b|
+          File.basename(a).downcase <=> File.basename(b).downcase
+        end
+      end
     end
   end
 end
