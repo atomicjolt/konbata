@@ -2,7 +2,6 @@ require "yaml"
 
 module Konbata
   class Configuration
-
     attr_accessor :canvas_url
     attr_accessor :canvas_token
     attr_accessor :account_id
