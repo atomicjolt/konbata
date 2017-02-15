@@ -1,2 +1,17 @@
+# --LibreOffice setup--
+
 # Generally looks like /Applications/LibreOffice.app/Contents/MacOS/soffice
 :libre_office_path: <LibreOffice Path>
+
+# --Canvas upload setup--
+:canvas_url: <canvas instance api url> # e.g. http://<canvas-url>/api
+
+# Found in Account >> Profile >> Generate Access Token
+:canvas_token: <canvas token>
+
+# Fourse number found at specific course url:
+#   http://<canvas-url>/accounts/_HERE_
+:account_id: <account id>
+
+# Leave empty for DEFAULT_TIMEOUT
+:request_timeout: <request timeout seconds>
