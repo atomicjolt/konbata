@@ -34,7 +34,7 @@ Create a `konbata.yml` file and add credentials:
 ## Usage
 
 #### Source Files
-Add any files you wish processed into the `sources` directory inside the Konbata project directory. It expects a specific directory structure for the source files that are added to that `sources` folder.
+Add any files you want to process into the `sources` directory inside the Konbata project directory. It expects a specific directory structure for the source files that are added to that `sources` folder.
 
 Each directory placed in the `sources` folder should include in it's name 2 pieces of data:
   - "Course - ####," (e.g. "Course - ABC123"). "####" will be used recognized as a course identifier.
