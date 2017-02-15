@@ -4,6 +4,8 @@ Konbata converts .doc and .docx files into Canvas .imscc packages.
 
 ## Installation
 
+Konbata depends on LibreOffice for source file conversion. You'll need to download and install it to your machine. You can do so [here](https://www.libreoffice.org/download/download/). Konbata was tested against LibreOffice version 5.3.0.
+
 After checking out the repo, run `bundle install` to install dependencies.
 
 Create a `konbata.yml` file and add credentials:
