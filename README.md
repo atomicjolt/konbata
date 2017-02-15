@@ -23,7 +23,7 @@ Create a `konbata.yml` file and add credentials:
 # Found in Account >> Profile >> Generate Access Token
 :canvas_token: <canvas token>
 
-# Number found at specific course url: http://<canvas-url>/accounts/_HERE_
+# ID found at specific course url: http://<canvas-url>/accounts/_HERE_
 # This can be :self, :default, or an ID.
 :account_id: <account id>
 
