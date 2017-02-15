@@ -69,8 +69,8 @@ module Konbata
       courses[course][volume] |= [file]
     end
 
-    course_structures.each do |_course_code, volumes|
-      course_structures[_course_code] = volumes.sort.to_h
+    course_structures.each do |course_code, volumes|
+      course_structures[course_code] = volumes.sort.to_h
       volumes.each do |_volume, file_paths|
         file_paths.sort! do |a, b|
           File.basename(a).downcase <=> File.basename(b).downcase
