@@ -29,6 +29,10 @@ Types of Files (and data chunks extracted therefrom):
 
 (Ignore Back files. They’re useless.)
 
+#### Filling in missing fields information
+
+- LibreOffice doesn't import fields from .docx files. The missing information can be found by renaming the .docx extension to .zip, extracting, and parsing the word/document.xml for the missing information.
+
 #### Parsing Unit Files (based on HTML conversion by LibreOffice)
 
 All content should be put into a page except the quizzes (self-test questions (one per major unit section) and the unit review exercises (one per unit)).
