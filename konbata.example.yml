@@ -9,7 +9,7 @@
 # Found in Account >> Profile >> Generate Access Token
 :canvas_token: <canvas token>
 
-# Fourse number found at specific course url:
+# Course number found at specific course url:
 #   http://<canvas-url>/accounts/_HERE_
 :account_id: <account id>
 
