@@ -50,6 +50,10 @@ describe Konbata do
       it "should add a module for each volume" do
         assert_equal(2, @course.canvas_course.canvas_modules.size)
       end
+      it "should sort the modules by volume number" do
+        assert_equal("Volume 1", @course.canvas_course.canvas_modules[0].title)
+        assert_equal("Volume 2", @course.canvas_course.canvas_modules[1].title)
+      end
     end
   end
 end
