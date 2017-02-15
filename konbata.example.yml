@@ -4,13 +4,15 @@
 :libre_office_path: <LibreOffice Path>
 
 # --Canvas upload setup--
-:canvas_url: <canvas instance api url> # e.g. http://<canvas-url>/api
+
+# e.g. http://<canvas-url>/api
+:canvas_url: <canvas instance api url>
 
 # Found in Account >> Profile >> Generate Access Token
 :canvas_token: <canvas token>
 
-# Course number found at specific course url:
-#   http://<canvas-url>/accounts/_HERE_
+# ID found at specific course url: http://<canvas-url>/accounts/_HERE_
+# This can be :self, :default, or an ID.
 :account_id: <account id>
 
 # Leave empty for DEFAULT_TIMEOUT
