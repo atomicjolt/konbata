@@ -63,6 +63,7 @@ Metrics/BlockLength:
   Exclude:
     - "**/*_spec.rb"
     - "**/**/tasks.rb"
+    - "*.gemspec"
 
 Style/ClassVars:
   Description: 'Avoid the use of class variables.'
