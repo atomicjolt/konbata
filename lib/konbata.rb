@@ -57,7 +57,9 @@ module Konbata
     end
   end
 
-  def self.upload_scorm
+  def self.convert_scorm
+    FileUtils.mkdir_p(OUTPUT_DIR)
+
     scorm_package_paths = Dir.glob("#{INPUT_DIR}/*.zip")
 
     scorm_package_paths.each do |package_path|

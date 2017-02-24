@@ -19,7 +19,7 @@ module Konbata
   class CanvasCourse
     def self.create(title)
       canvas_course = CanvasCc::CanvasCC::Models::Course.new
-      canvas_course.identifier = title
+      canvas_course.identifier = Konbata.create_random_hex
       canvas_course.course_code = title
       canvas_course.title = title
 
