@@ -63,7 +63,12 @@ module Konbata
           Konbata.convert_courses
         end
 
-        desc "Upload converted files to canvas"
+        desc "Find and upload SCORM packages to Canvas"
+        task :scorm do
+          Konbata.upload_scorm
+        end
+
+        desc "Upload .imscc files to canvas"
         task upload: CONVERTED_FILES.pathmap(
           "%{^#{OUTPUT_NAME}/,#{UPLOAD_DIR}/}X.txt",
         )

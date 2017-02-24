@@ -15,7 +15,7 @@
 
 require "canvas_cc"
 require "libreconv"
-require "konbata/models/module_item"
+require "konbata/models/canvas_module_item"
 
 module Konbata
   class SourceFile

@@ -18,7 +18,8 @@ require "zip"
 
 require "konbata/configuration"
 require "konbata/reporter"
-require "konbata/models/canvas_course"
+require "konbata/models/doc_course"
+require "konbata/models/scorm_course"
 require "konbata/models/upload_course"
 
 module Konbata
@@ -54,6 +55,17 @@ module Konbata
 
       Konbata::Reporter.complete_course(course_code)
     end
+  end
+
+  def self.upload_scorm
+    scorm_package_paths = Dir.glob("#{INPUT_DIR}/*.zip")
+
+    scorm_package_paths.each do |package_path|
+      course = ScormCourse.new(package_path)
+      create_imscc(course)
+    end
+
+    # Add scorm package to scorm player
   end
 
   def self.create_imscc(course)

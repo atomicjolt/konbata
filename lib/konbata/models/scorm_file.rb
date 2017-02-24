@@ -14,16 +14,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module Konbata
-  class ModuleItem
-    def self.create(title, identifierref)
-      module_item = CanvasCc::CanvasCC::Models::ModuleItem.new
-      module_item.title = title
-      module_item.identifier = Konbata.create_random_hex
-      module_item.content_type = "WikiPage"
-      module_item.identifierref = identifierref
-      module_item.workflow_state = "active"
+  class ScormFile
+    attr_reader :canvas_file
 
-      module_item
+    def initialize(file_path)
+      @file_path = file_path
+      @canvas_file = _create_canvas_file
+    end
+
+    private
+
+    ##
+    # Creates and populates a canvas_cc CanvasFile.
+    ##
+    def _create_canvas_file
+      canvas_file = CanvasCc::CanvasCC::Models::CanvasFile.new
+
+      canvas_file.identifier = Konbata.create_random_hex
+      canvas_file.file_location = @file_path
+      canvas_file.hidden = false
+      canvas_file.file_path = File.basename(@file_path)
+
+      canvas_file
     end
   end
 end

@@ -16,7 +16,7 @@
 require "canvas_cc"
 
 module Konbata
-  class Module
+  class CanvasModule
     def self.create(volume)
       canvas_module = CanvasCc::CanvasCC::Models::CanvasModule.new
       canvas_module.identifier = Konbata.create_random_hex
