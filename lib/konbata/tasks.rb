@@ -72,9 +72,9 @@ module Konbata
           Konbata.convert_courses
         end
 
-        desc "Find and add SCORM packages to imscc"
+        desc "Find and process SCORM packages"
         task :scorm do
-          Konbata.create_scorm
+          Konbata.convert_scorm
         end
 
         desc "Upload .imscc files to canvas"
