@@ -63,7 +63,7 @@ module Konbata
     scorm_package_paths = Dir.glob("#{INPUT_DIR}/*.zip")
     scorm_package_paths.each do |package_path|
       # Formats path to not have any spaces as the Scorm upload can't handle it
-      formatted_path = package_path.gsub(/[ ]/, "_")
+      formatted_path = package_path.gsub(/\s/, "_")
       if formatted_path != package_path
         File.rename(package_path, formatted_path)
         package_path = formatted_path

@@ -23,7 +23,6 @@ UPLOAD_DIR = "uploaded".freeze
 ## of the folder name for the script below to use
 OUTPUT_NAME = Konbata::OUTPUT_DIR.split("/").last
 UPLOAD_NAME = UPLOAD_DIR.split("/").last
-SOURCE_FILES = Rake::FileList.new("#{Konbata::INPUT_DIR}/*.zip")
 CONVERTED_FILES = Rake::FileList.new("#{Konbata::OUTPUT_DIR}/*.imscc")
 
 ##
