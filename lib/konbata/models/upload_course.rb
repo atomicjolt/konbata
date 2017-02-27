@@ -104,9 +104,11 @@ module Konbata
       upload_to_s3(migration, filename)
       puts "Done uploading: #{name}"
 
-      puts "Creating Scorm: #{name}"
-      upload_scorm_package(source_for_imscc, @course_resource.id)
-      puts "Done creating scorm: #{name}"
+      if File.exist?(source_for_imscc)
+        puts "Creating Scorm: #{name}"
+        upload_scorm_package(source_for_imscc, @course_resource.id)
+        puts "Done creating scorm: #{name}"
+      end
     end
 
     def upload_to_s3(migration, filename)
