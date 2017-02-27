@@ -68,7 +68,7 @@ module Konbata
     end
 
     ##
-    # Uploads a scorm package to scorm manager specified in senkyoshi.yml
+    # Uploads a scorm package to scorm manager specified in konbata.yml
     # config file
     ##
     def upload_scorm_package(scorm_zip, course_id)

@@ -22,7 +22,7 @@ require "konbata/models/glossary_file"
 require "konbata/models/unit_file"
 
 module Konbata
-  class Course
+  class DocCourse
     attr_reader :canvas_course
 
     def initialize(course_code, volumes)
@@ -66,7 +66,7 @@ module Konbata
 
     def _convert_source_files(canvas_course)
       @volumes.each do |volume, source_files|
-        canvas_module = Konbata::Module.create(volume)
+        canvas_module = Konbata::CanvasModule.create(volume)
 
         source_files.each do |source_file|
           source_file.convert(canvas_course, canvas_module)
