@@ -36,14 +36,6 @@ CONVERTED_FILES = Rake::FileList.new("#{Konbata::OUTPUT_DIR}/*.imscc")
 #
 ##
 
-def source_for_imscc(imscc_file)
-  SOURCE_FILES.detect do |f|
-    path =
-      imscc_file.pathmap("%{^#{Konbata::OUTPUT_DIR}/,#{Konbata::INPUT_DIR}/}X")
-    f.ext("") == path
-  end
-end
-
 def source_for_upload_log(upload_log)
   CONVERTED_FILES.detect do |f|
     path = upload_log.pathmap("%{^#{UPLOAD_DIR}/,#{Konbata::OUTPUT_DIR}/}X")
@@ -86,7 +78,7 @@ module Konbata
 
         rule ".txt" => [->(f) { source_for_upload_log(f) }, UPLOAD_NAME] do |t|
           make_directories(t.name, UPLOAD_DIR)
-          Konbata.initialize_course(t.source, source_for_imscc(t.source))
+          Konbata.initialize_course(t.source)
           log_file(t.name)
         end
 

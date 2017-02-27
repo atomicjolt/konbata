@@ -61,8 +61,13 @@ module Konbata
     FileUtils.mkdir_p(OUTPUT_DIR)
 
     scorm_package_paths = Dir.glob("#{INPUT_DIR}/*.zip")
-
     scorm_package_paths.each do |package_path|
+      # Formats path to not have any spaces as the Scorm upload can't handle it
+      formatted_path = package_path.gsub(/[ ]/, "_")
+      if formatted_path != package_path
+        File.rename(package_path, formatted_path)
+        package_path = formatted_path
+      end
       course = ScormCourse.new(package_path)
       create_imscc(course)
     end
@@ -72,8 +77,7 @@ module Konbata
     imscc = CanvasCc::CanvasCC::CartridgeCreator.
       new(course.canvas_course).
       create(Dir.mktmpdir)
-    # Renaming imscc file name to match source file since CanvasCC changes it
-    FileUtils.cp(imscc, "#{OUTPUT_DIR}/#{course.canvas_course.title}.imscc")
+    FileUtils.cp(imscc, OUTPUT_DIR)
   end
 
   ##
@@ -106,9 +110,10 @@ module Konbata
     end
   end
 
-  def self.initialize_course(canvas_file_path, source_for_imscc)
+  def self.initialize_course(canvas_file_path)
     metadata = Konbata::UploadCourse.metadata_from_file(canvas_file_path)
     course = Konbata::UploadCourse.from_metadata(metadata)
+    source_for_imscc = "#{INPUT_DIR}/#{metadata[:title]}.zip"
     course.upload_content(canvas_file_path, source_for_imscc)
   end
 end
