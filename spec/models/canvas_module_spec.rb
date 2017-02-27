@@ -13,18 +13,31 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class MockCourse < Konbata::Course
-  def _instantiate_source_files
-    @volumes.each do |volume, file_paths|
-      file_paths.map! do |file_path|
-        if file_path[/front/i]
-          MockCoverPageFile.new(file_path, volume)
-        elsif file_path[/glos/i]
-          MockGlossaryFile.new(file_path, volume)
-        elsif file_path[/U\d+/i]
-          MockUnitFile.new(file_path, volume)
-        end
-      end.compact!
+require_relative "../helpers/spec_helper"
+
+describe Konbata do
+  describe "Module" do
+    describe "self.create" do
+      before do
+        @volume = "3"
+        @module = Konbata::CanvasModule.create(@volume)
+      end
+
+      it "should return a canvas_cc module" do
+        assert(@module.is_a?(CanvasCc::CanvasCC::Models::CanvasModule))
+      end
+
+      it "should give the module an identifier" do
+        refute_nil(@module.identifier)
+      end
+
+      it "should give the module a title" do
+        assert_equal("Volume 3", @module.title)
+      end
+
+      it "should give the module a workflow state of 'active'" do
+        assert_equal("active", @module.workflow_state)
+      end
     end
   end
 end

@@ -28,28 +28,10 @@ describe Konbata do
       ],
     }
 
-    @course = MockCourse.new(@course_code, volumes)
+    @course = MockDocCourse.new(@course_code, volumes)
   end
 
   describe "Course" do
-    describe "_create_canvas_course" do
-      it "should return a canvas_cc course" do
-        assert(@course.canvas_course.is_a?(CanvasCc::CanvasCC::Models::Course))
-      end
-
-      it "should give the canvas_cc course an identifier" do
-        assert_equal(@course_code, @course.canvas_course.identifier)
-      end
-
-      it "should give the canvas_cc course a course code" do
-        assert_equal(@course_code, @course.canvas_course.course_code)
-      end
-
-      it "should give the canvas_cc course a title" do
-        assert_equal(@course_code, @course.canvas_course.title)
-      end
-    end
-
     describe "_add_raw_source_files" do
       it "should populate canvas_cc course with files" do
         assert_equal(3, @course.canvas_course.files.size)
