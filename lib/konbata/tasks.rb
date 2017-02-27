@@ -23,6 +23,7 @@ UPLOAD_DIR = "uploaded".freeze
 ## of the folder name for the script below to use
 OUTPUT_NAME = Konbata::OUTPUT_DIR.split("/").last
 UPLOAD_NAME = UPLOAD_DIR.split("/").last
+SOURCE_FILES = Rake::FileList.new("#{Konbata::INPUT_DIR}/*.zip")
 CONVERTED_FILES = Rake::FileList.new("#{Konbata::OUTPUT_DIR}/*.imscc")
 
 ##
@@ -34,6 +35,14 @@ CONVERTED_FILES = Rake::FileList.new("#{Konbata::OUTPUT_DIR}/*.imscc")
 #   Senkyoshi::Tasks.install_tasks
 #
 ##
+
+def source_for_imscc(imscc_file)
+  SOURCE_FILES.detect do |f|
+    path =
+      imscc_file.pathmap("%{^#{Konbata::OUTPUT_DIR}/,#{Konbata::INPUT_DIR}/}X")
+    f.ext("") == path
+  end
+end
 
 def source_for_upload_log(upload_log)
   CONVERTED_FILES.detect do |f|
@@ -63,9 +72,9 @@ module Konbata
           Konbata.convert_courses
         end
 
-        desc "Find and upload SCORM packages to Canvas"
+        desc "Find and add SCORM packages to imscc"
         task :scorm do
-          Konbata.upload_scorm
+          Konbata.create_scorm
         end
 
         desc "Upload .imscc files to canvas"
@@ -77,7 +86,7 @@ module Konbata
 
         rule ".txt" => [->(f) { source_for_upload_log(f) }, UPLOAD_NAME] do |t|
           make_directories(t.name, UPLOAD_DIR)
-          Konbata.initialize_course(t.source)
+          Konbata.initialize_course(t.source, source_for_imscc(t.source))
           log_file(t.name)
         end
 

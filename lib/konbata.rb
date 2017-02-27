@@ -57,23 +57,22 @@ module Konbata
     end
   end
 
-  def self.upload_scorm
+  def self.create_scorm
+    FileUtils.mkdir_p(OUTPUT_DIR)
     scorm_package_paths = Dir.glob("#{INPUT_DIR}/*.zip")
 
     scorm_package_paths.each do |package_path|
       course = ScormCourse.new(package_path)
       create_imscc(course)
     end
-
-    # Add scorm package to scorm player
   end
 
   def self.create_imscc(course)
     imscc = CanvasCc::CanvasCC::CartridgeCreator.
       new(course.canvas_course).
       create(Dir.mktmpdir)
-
-    FileUtils.cp(imscc, OUTPUT_DIR)
+    # Renaming imscc file name to match source file since CanvasCC changes it
+    FileUtils.cp(imscc, "#{OUTPUT_DIR}/#{course.canvas_course.title}.imscc")
   end
 
   ##
@@ -106,9 +105,9 @@ module Konbata
     end
   end
 
-  def self.initialize_course(canvas_file_path)
+  def self.initialize_course(canvas_file_path, source_for_imscc)
     metadata = Konbata::UploadCourse.metadata_from_file(canvas_file_path)
     course = Konbata::UploadCourse.from_metadata(metadata)
-    course.upload_content(canvas_file_path)
+    course.upload_content(canvas_file_path, source_for_imscc)
   end
 end
