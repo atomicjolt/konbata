@@ -80,6 +80,8 @@ Any `.zip` files placed at the top level of the `sources` directory will be proc
 
 Only basic support for SCORM packages is available as of right now. For each SCORM zip found, Konbata will create a skeleton Canvas course and create an .imscc file for that course. It will add the original SCORM package to the course's files and, when running the `upload` command, Konbata will also make the appropriate calls to upload the SCORM package to the SCORM manager designated in the `konbata.yml` file.
 
+Konbata also adds any PDF files found in the SCORM package to the course's files.
+
 #### Running
 
 To run Konbata, use the following Rake tasks:
