@@ -20,7 +20,8 @@ describe Konbata do
   describe "ScormCourse" do
     describe "#_create_canvas_course" do
       before do
-        @scorm_course = Konbata::ScormCourse.new("sources/Test_Package.zip")
+        @scorm_zip = fixture_path("scorm_with_no_pdfs.zip")
+        @scorm_course = Konbata::ScormCourse.new(@scorm_zip)
       end
 
       it "should return a canvas_course" do
@@ -28,7 +29,39 @@ describe Konbata do
       end
 
       it "should add the SCORM file to the canvas_course" do
-        assert_equal(1, @scorm_course.canvas_course.files.size)
+        scorm_file = @scorm_course.canvas_course.files.detect do |file|
+          file.file_location = @scorm_zip
+        end
+
+        assert(scorm_file)
+      end
+    end
+
+    describe "#_extract_pdfs" do
+      def scorm_course_pdfs(zip_name)
+        scorm_course = Konbata::ScormCourse.new(fixture_path(zip_name))
+
+        scorm_course.canvas_course.files.select do |file|
+          File.extname(file.file_location) == ".pdf"
+        end
+      end
+
+      it "should return no files if there are no PDFs" do
+        pdf_files = scorm_course_pdfs("scorm_with_no_pdfs.zip")
+
+        assert_empty(pdf_files)
+      end
+
+      it "should return a single file if there is 1 PDF" do
+        pdf_files = scorm_course_pdfs("scorm_with_1_pdf.zip")
+
+        assert_equal(1, pdf_files.size)
+      end
+
+      it "should return a multiple files if there are multiple PDFs" do
+        pdf_files = scorm_course_pdfs("scorm_with_3_pdfs.zip")
+
+        assert_equal(3, pdf_files.size)
       end
     end
   end

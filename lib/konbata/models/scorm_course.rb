@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+require "zip"
 require "konbata/models/canvas_course"
 require "konbata/models/scorm_file"
 
@@ -34,8 +35,28 @@ module Konbata
       scorm_file = ScormFile.new(@package_path)
 
       canvas_course.files << scorm_file.canvas_file
+      _scorm_pdfs.each { |file| canvas_course.files << file.canvas_file }
 
       canvas_course
+    end
+
+    ##
+    # Iterates through the SCORM package and detects any PDF files. A ScormFile
+    # object will be generated for each PDF found, and an array of ScormFile
+    # objects is returned.
+    ##
+    def _scorm_pdfs
+      temp_dir = Dir.mktmpdir
+
+      pdf_entries = Zip::File.new(@package_path).entries.select do |entry|
+        File.extname(entry.name) == ".pdf"
+      end
+
+      pdf_entries.map do |entry|
+        extract_to = File.join(temp_dir, File.basename(entry.name))
+        entry.extract(extract_to)
+        ScormFile.new(extract_to)
+      end
     end
   end
 end
