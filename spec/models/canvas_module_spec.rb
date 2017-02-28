@@ -16,23 +16,27 @@
 require_relative "../helpers/spec_helper"
 
 describe Konbata do
-  describe "GlossaryFile" do
-    describe "initialize" do
+  describe "Module" do
+    describe "self.create" do
       before do
-        file_path = fixture_path("glos.doc")
         @volume = "3"
-
-        @cover_page_file = MockGlossaryFile.new(file_path, @volume)
-        @canvas_course = CanvasCc::CanvasCC::Models::Course.new
-        @canvas_module = Konbata::CanvasModule.create(@volume)
-        @cover_page_file.convert(@canvas_course, @canvas_module)
+        @module = Konbata::CanvasModule.create(@volume)
       end
 
-      it "should create a title" do
-        assert_equal(
-          "Glossary (Vol. #{@volume})",
-          @canvas_module.module_items.first.title,
-        )
+      it "should return a canvas_cc module" do
+        assert(@module.is_a?(CanvasCc::CanvasCC::Models::CanvasModule))
+      end
+
+      it "should give the module an identifier" do
+        refute_nil(@module.identifier)
+      end
+
+      it "should give the module a title" do
+        assert_equal("Volume 3", @module.title)
+      end
+
+      it "should give the module a workflow state of 'active'" do
+        assert_equal("active", @module.workflow_state)
       end
     end
   end

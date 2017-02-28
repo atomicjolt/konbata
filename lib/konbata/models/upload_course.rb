@@ -68,10 +68,28 @@ module Konbata
     end
 
     ##
+    # Uploads a scorm package to scorm manager specified in konbata.yml
+    # config file
+    ##
+    def upload_scorm_package(scorm_zip, course_id)
+      File.open(scorm_zip, "rb") do |file|
+        RestClient.post(
+          "#{Konbata.configuration.scorm_url}/api/scorm_courses",
+          {
+            oauth_consumer_key: "scorm-player",
+            lms_course_id: course_id,
+            file: file,
+          },
+          SharedAuthorization: Konbata.configuration.scorm_shared_auth,
+        )
+      end
+    end
+
+    ##
     # Create a migration for the course
     # and upload the imscc file to be imported into the course
     ##
-    def upload_content(filename)
+    def upload_content(filename, source_for_imscc)
       client = UploadCourse.client
       name = File.basename(filename)
       # Create a migration for the course and get S3 upload authorization
@@ -85,6 +103,12 @@ module Konbata
       puts "Uploading: #{name}"
       upload_to_s3(migration, filename)
       puts "Done uploading: #{name}"
+
+      if File.exist?(source_for_imscc)
+        puts "Creating Scorm: #{name}"
+        upload_scorm_package(source_for_imscc, @course_resource.id)
+        puts "Done creating scorm: #{name}"
+      end
     end
 
     def upload_to_s3(migration, filename)

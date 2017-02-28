@@ -14,25 +14,30 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require_relative "../helpers/spec_helper"
+require "konbata/models/canvas_course"
 
 describe Konbata do
-  describe "GlossaryFile" do
-    describe "initialize" do
+  describe "CanvasCourse" do
+    describe "#create" do
       before do
-        file_path = fixture_path("glos.doc")
-        @volume = "3"
-
-        @cover_page_file = MockGlossaryFile.new(file_path, @volume)
-        @canvas_course = CanvasCc::CanvasCC::Models::Course.new
-        @canvas_module = Konbata::CanvasModule.create(@volume)
-        @cover_page_file.convert(@canvas_course, @canvas_module)
+        @title = "Test Course"
+        @canvas_course = Konbata::CanvasCourse.create(@title)
       end
 
-      it "should create a title" do
-        assert_equal(
-          "Glossary (Vol. #{@volume})",
-          @canvas_module.module_items.first.title,
-        )
+      it "should return a canvas_cc course" do
+        assert_kind_of(CanvasCc::CanvasCC::Models::Course, @canvas_course)
+      end
+
+      it "should give the canvas_cc course an identifier" do
+        refute_nil(@canvas_course.identifier)
+      end
+
+      it "should give the canvas_cc course a course code" do
+        assert_equal(@title, @canvas_course.course_code)
+      end
+
+      it "should give the canvas_cc course a title" do
+        assert_equal(@title, @canvas_course.title)
       end
     end
   end

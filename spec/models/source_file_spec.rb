@@ -23,7 +23,7 @@ describe Konbata do
 
       @source_file = MockSourceFile.new(@file_path, volume)
       @canvas_course = CanvasCc::CanvasCC::Models::Course.new
-      @canvas_module = Konbata::Module.create(volume)
+      @canvas_module = Konbata::CanvasModule.create(volume)
       @source_file.convert(@canvas_course, @canvas_module)
     end
 

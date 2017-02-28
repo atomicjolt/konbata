@@ -13,17 +13,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require "canvas_cc"
-
 module Konbata
-  class Module
-    def self.create(volume)
-      canvas_module = CanvasCc::CanvasCC::Models::CanvasModule.new
-      canvas_module.identifier = Konbata.create_random_hex
-      canvas_module.title = "Volume #{volume}"
-      canvas_module.workflow_state = "active"
+  class CanvasModuleItem
+    def self.create(title, identifierref)
+      module_item = CanvasCc::CanvasCC::Models::ModuleItem.new
+      module_item.title = title
+      module_item.identifier = Konbata.create_random_hex
+      module_item.content_type = "WikiPage"
+      module_item.identifierref = identifierref
+      module_item.workflow_state = "active"
 
-      canvas_module
+      module_item
     end
   end
 end

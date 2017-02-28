@@ -15,5 +15,9 @@
 # This can be :self, :default, or an ID.
 :account_id: <account id>
 
+:scorm_url: <scorm manager url>
+:scorm_launch_url: <scorm launch url>
+:scorm_shared_auth: <scorm manager token>
+
 # Leave empty for DEFAULT_TIMEOUT
 :request_timeout: <request timeout seconds>

@@ -14,25 +14,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require_relative "../helpers/spec_helper"
+require "konbata/models/scorm_course"
 
 describe Konbata do
-  describe "GlossaryFile" do
-    describe "initialize" do
+  describe "ScormCourse" do
+    describe "#_create_canvas_course" do
       before do
-        file_path = fixture_path("glos.doc")
-        @volume = "3"
-
-        @cover_page_file = MockGlossaryFile.new(file_path, @volume)
-        @canvas_course = CanvasCc::CanvasCC::Models::Course.new
-        @canvas_module = Konbata::CanvasModule.create(@volume)
-        @cover_page_file.convert(@canvas_course, @canvas_module)
+        @scorm_course = Konbata::ScormCourse.new("sources/Test_Package.zip")
       end
 
-      it "should create a title" do
-        assert_equal(
-          "Glossary (Vol. #{@volume})",
-          @canvas_module.module_items.first.title,
-        )
+      it "should return a canvas_course" do
+        refute_nil(@scorm_course.canvas_course)
+      end
+
+      it "should add the SCORM file to the canvas_course" do
+        assert_equal(1, @scorm_course.canvas_course.files.size)
       end
     end
   end

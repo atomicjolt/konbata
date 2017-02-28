@@ -21,7 +21,7 @@ describe Konbata do
       before do
         @title = "Test Module Item"
         @identifierref = Konbata.create_random_hex
-        @module_item = Konbata::ModuleItem.create(@title, @identifierref)
+        @module_item = Konbata::CanvasModuleItem.create(@title, @identifierref)
       end
 
       it "should return a canvas_cc module item" do

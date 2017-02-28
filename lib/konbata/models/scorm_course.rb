@@ -13,17 +13,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-module Konbata
-  class ModuleItem
-    def self.create(title, identifierref)
-      module_item = CanvasCc::CanvasCC::Models::ModuleItem.new
-      module_item.title = title
-      module_item.identifier = Konbata.create_random_hex
-      module_item.content_type = "WikiPage"
-      module_item.identifierref = identifierref
-      module_item.workflow_state = "active"
+require "konbata/models/canvas_course"
+require "konbata/models/scorm_file"
 
-      module_item
+module Konbata
+  class ScormCourse
+    attr_reader :canvas_course
+
+    def initialize(package_path)
+      @package_path = package_path
+      # TODO: Consider using <title> node for course name.
+      @course_title = File.basename(package_path, ".zip")
+      @canvas_course = _create_canvas_course
+    end
+
+    private
+
+    def _create_canvas_course
+      canvas_course = CanvasCourse.create(@course_title)
+      scorm_file = ScormFile.new(@package_path)
+
+      canvas_course.files << scorm_file.canvas_file
+
+      canvas_course
     end
   end
 end

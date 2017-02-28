@@ -13,31 +13,29 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require_relative "../helpers/spec_helper"
+module Konbata
+  class ScormFile
+    attr_reader :canvas_file
 
-describe Konbata do
-  describe "Module" do
-    describe "self.create" do
-      before do
-        @volume = "3"
-        @module = Konbata::Module.create(@volume)
-      end
+    def initialize(file_path)
+      @file_path = file_path
+      @canvas_file = _create_canvas_file
+    end
 
-      it "should return a canvas_cc module" do
-        assert(@module.is_a?(CanvasCc::CanvasCC::Models::CanvasModule))
-      end
+    private
 
-      it "should give the module an identifier" do
-        refute_nil(@module.identifier)
-      end
+    ##
+    # Creates and populates a canvas_cc CanvasFile.
+    ##
+    def _create_canvas_file
+      canvas_file = CanvasCc::CanvasCC::Models::CanvasFile.new
 
-      it "should give the module a title" do
-        assert_equal("Volume 3", @module.title)
-      end
+      canvas_file.identifier = Konbata.create_random_hex
+      canvas_file.file_location = @file_path
+      canvas_file.hidden = false
+      canvas_file.file_path = File.basename(@file_path)
 
-      it "should give the module a workflow state of 'active'" do
-        assert_equal("active", @module.workflow_state)
-      end
+      canvas_file
     end
   end
 end

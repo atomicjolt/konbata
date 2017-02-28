@@ -24,7 +24,7 @@ describe Konbata do
 
         @cover_page_file = MockUnitFile.new(file_path, @volume)
         @canvas_course = CanvasCc::CanvasCC::Models::Course.new
-        @canvas_module = Konbata::Module.create(@volume)
+        @canvas_module = Konbata::CanvasModule.create(@volume)
         @cover_page_file.convert(@canvas_course, @canvas_module)
       end
 

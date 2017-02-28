@@ -18,7 +18,8 @@ require "zip"
 
 require "konbata/configuration"
 require "konbata/reporter"
-require "konbata/models/canvas_course"
+require "konbata/models/doc_course"
+require "konbata/models/scorm_course"
 require "konbata/models/upload_course"
 
 module Konbata
@@ -39,7 +40,7 @@ module Konbata
     "aj_" + SecureRandom.hex(32)
   end
 
-  def self.convert_courses
+  def self.convert_docs
     FileUtils.mkdir_p(OUTPUT_DIR)
 
     docs = Dir.glob("#{INPUT_DIR}/**/*.{doc,docx}")
@@ -49,10 +50,26 @@ module Konbata
     course_structures.each_with_index do |(course_code, volumes), index|
       Konbata::Reporter.start_course(course_code, index, course_structures.size)
 
-      course = Konbata::Course.new(course_code, volumes)
+      course = Konbata::DocCourse.new(course_code, volumes)
       create_imscc(course)
 
       Konbata::Reporter.complete_course(course_code)
+    end
+  end
+
+  def self.convert_scorm
+    FileUtils.mkdir_p(OUTPUT_DIR)
+
+    scorm_package_paths = Dir.glob("#{INPUT_DIR}/*.zip")
+    scorm_package_paths.each do |package_path|
+      # Formats path to not have any spaces as the Scorm upload can't handle it
+      formatted_path = package_path.gsub(/\s/, "_")
+      if formatted_path != package_path
+        File.rename(package_path, formatted_path)
+        package_path = formatted_path
+      end
+      course = ScormCourse.new(package_path)
+      create_imscc(course)
     end
   end
 
@@ -60,7 +77,6 @@ module Konbata
     imscc = CanvasCc::CanvasCC::CartridgeCreator.
       new(course.canvas_course).
       create(Dir.mktmpdir)
-
     FileUtils.cp(imscc, OUTPUT_DIR)
   end
 
@@ -97,6 +113,7 @@ module Konbata
   def self.initialize_course(canvas_file_path)
     metadata = Konbata::UploadCourse.metadata_from_file(canvas_file_path)
     course = Konbata::UploadCourse.from_metadata(metadata)
-    course.upload_content(canvas_file_path)
+    source_for_imscc = "#{INPUT_DIR}/#{metadata[:title]}.zip"
+    course.upload_content(canvas_file_path, source_for_imscc)
   end
 end

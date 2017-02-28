@@ -13,18 +13,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class MockCourse < Konbata::Course
-  def _instantiate_source_files
-    @volumes.each do |volume, file_paths|
-      file_paths.map! do |file_path|
-        if file_path[/front/i]
-          MockCoverPageFile.new(file_path, volume)
-        elsif file_path[/glos/i]
-          MockGlossaryFile.new(file_path, volume)
-        elsif file_path[/U\d+/i]
-          MockUnitFile.new(file_path, volume)
-        end
-      end.compact!
+require "canvas_cc"
+
+module Konbata
+  class CanvasModule
+    def self.create(volume)
+      canvas_module = CanvasCc::CanvasCC::Models::CanvasModule.new
+      canvas_module.identifier = Konbata.create_random_hex
+      canvas_module.title = "Volume #{volume}"
+      canvas_module.workflow_state = "active"
+
+      canvas_module
     end
   end
 end

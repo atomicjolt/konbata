@@ -15,7 +15,7 @@
 
 require "canvas_cc"
 require "libreconv"
-require "konbata/models/module_item"
+require "konbata/models/canvas_module_item"
 
 module Konbata
   class SourceFile
@@ -49,7 +49,7 @@ module Konbata
       page.page_name = @title
       page.body = _html_text(html_output_dir)
 
-      module_item = Konbata::ModuleItem.create(
+      module_item = Konbata::CanvasModuleItem.create(
         @title,
         page.identifier,
       )

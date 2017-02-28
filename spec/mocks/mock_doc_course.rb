@@ -13,27 +13,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require_relative "../helpers/spec_helper"
-
-describe Konbata do
-  describe "GlossaryFile" do
-    describe "initialize" do
-      before do
-        file_path = fixture_path("glos.doc")
-        @volume = "3"
-
-        @cover_page_file = MockGlossaryFile.new(file_path, @volume)
-        @canvas_course = CanvasCc::CanvasCC::Models::Course.new
-        @canvas_module = Konbata::CanvasModule.create(@volume)
-        @cover_page_file.convert(@canvas_course, @canvas_module)
-      end
-
-      it "should create a title" do
-        assert_equal(
-          "Glossary (Vol. #{@volume})",
-          @canvas_module.module_items.first.title,
-        )
-      end
+class MockDocCourse < Konbata::DocCourse
+  def _instantiate_source_files
+    @volumes.each do |volume, file_paths|
+      file_paths.map! do |file_path|
+        if file_path[/front/i]
+          MockCoverPageFile.new(file_path, volume)
+        elsif file_path[/glos/i]
+          MockGlossaryFile.new(file_path, volume)
+        elsif file_path[/U\d+/i]
+          MockUnitFile.new(file_path, volume)
+        end
+      end.compact!
     end
   end
 end
