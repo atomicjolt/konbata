@@ -16,6 +16,7 @@
 require "canvas_cc"
 require "pandarus"
 require "rest-client"
+require "zip"
 
 module Konbata
   class UploadCourse
