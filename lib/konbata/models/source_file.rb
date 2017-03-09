@@ -70,7 +70,7 @@ module Konbata
       canvas_file.file_location = @file_path
       canvas_file.hidden = false
       canvas_file.file_path = File.join(
-        "Volume #{@volume}", File.basename(@file_path).to_s
+        "Volume #{@volume}", File.basename(@file_path)
       )
 
       canvas_file
