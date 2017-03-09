@@ -77,7 +77,9 @@ module Konbata
     imscc = CanvasCc::CanvasCC::CartridgeCreator.
       new(course.canvas_course).
       create(Dir.mktmpdir)
+
     FileUtils.cp(imscc, OUTPUT_DIR)
+    FileUtils.remove_entry_secure(imscc)
   end
 
   ##
