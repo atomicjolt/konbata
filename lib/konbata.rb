@@ -70,6 +70,7 @@ module Konbata
       end
       course = ScormCourse.new(package_path)
       create_imscc(course)
+      course.cleanup
     end
   end
 
