@@ -37,12 +37,6 @@ module Konbata
         _pdfs_to_files.each { |file| canvas_course.files << file.canvas_file }
         _items_to_pages.each { |page| canvas_course.pages << page.canvas_page }
 
-        # TODO: Restructure the flow of this method.
-        # Use the @package.items hash as the baseline for processing.
-        # It has the relevant PDF files and the relevant HTML files.
-
-        require "pry"; binding.pry
-
         canvas_course
       end
     end
@@ -64,8 +58,8 @@ module Konbata
     # Creates a ScormPage object for each element in @package.items and returns
     # them as an array.
     def _items_to_pages
-      @package.items.map do |item|
-        ScormPage.new(item)
+      @package.items.map do |_, item_data|
+        ScormPage.new(item_data)
       end
     end
   end

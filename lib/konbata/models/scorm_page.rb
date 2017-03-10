@@ -19,24 +19,23 @@ module Konbata
   class ScormPage
     attr_reader :canvas_page
 
-    def initialize(file_path)
-      @file_path = file_path
-      @canvas_page = _create_canvas_page
+    def initialize(item)
+      @item = item
     end
-
-    private
 
     ##
     # Creates and populates a canvas_cc page.
     ##
-    def _create_canvas_page
-      page = CanvasCc::CanvasCC::Models::Page.new
-      page.identifier = Konbata.create_random_hex
-      page.workflow_state = "active"
-      page.page_name = File.basename(@file_path)
-      page.body = "This is a page."
+    def canvas_page
+      @canvas_page ||= begin
+        page = CanvasCc::CanvasCC::Models::Page.new
+        page.identifier = Konbata.create_random_hex
+        page.workflow_state = "active"
+        page.page_name = @item.title
+        page.body = "This is a page."
 
-      page
+        page
+      end
     end
   end
 end

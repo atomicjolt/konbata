@@ -77,10 +77,10 @@ module Konbata
           id_ref = item.attr(:identifierref)
           title = item.at(:title).text
 
-          items[id] = {
-            title: title,
-            files: _item_files(id_ref),
-          }
+          items[id] = Struct.new(:title, :files).new(
+            title,
+            _item_files(id_ref),
+          )
         end
       end
     end
