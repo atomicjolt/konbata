@@ -61,16 +61,7 @@ module Konbata
     ##
     def pdfs
       @pdfs ||= begin
-        pdf_entries = Zip::File.new(@filepath).entries.select do |entry|
-          File.extname(entry.name) == ".pdf"
-        end
-
-        pdf_entries.map do |entry|
-          extract_to = File.join(@temp_dir, File.basename(entry.name))
-          entry.extract(extract_to)
-
-          extract_to
-        end
+        _all_files.select { |file| File.extname(file) == ".pdf" }
       end
     end
 
@@ -102,6 +93,15 @@ module Konbata
     end
 
     private
+
+    ##
+    # Returns a flat list of all files in the SCORM package.
+    ##
+    def _all_files
+      items.map do |_, item_data|
+        item_data.files
+      end.flatten
+    end
 
     ##
     # Returns a list of extracted files associated with the resource matching
