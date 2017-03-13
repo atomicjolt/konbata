@@ -32,10 +32,19 @@ module Konbata
         page.identifier = Konbata.create_random_hex
         page.workflow_state = "active"
         page.page_name = @item.title
-        page.body = "This is a page."
+        page.body = _page_content
 
         page
       end
+    end
+
+    private
+
+    ##
+    # Reads the content from the item's primary file.
+    ##
+    def _page_content
+      File.read(File.join(@item.directory, @item.primary_file))
     end
   end
 end

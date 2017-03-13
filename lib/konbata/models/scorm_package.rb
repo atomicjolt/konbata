@@ -77,8 +77,10 @@ module Konbata
           id_ref = item.attr(:identifierref)
           title = item.at(:title).text
 
-          items[id] = Struct.new(:title, :files).new(
+          items[id] = Struct.new(:title, :directory, :primary_file, :files).new(
             title,
+            @temp_dir,
+            _item_primary_file(id_ref),
             _item_files(id_ref),
           )
         end
@@ -95,12 +97,22 @@ module Konbata
     private
 
     ##
-    # Returns a flat list of all files in the SCORM package.
+    # Returns a flat list of all resource files in the SCORM package.
     ##
     def _all_files
-      items.map do |_, item_data|
+      files = items.map do |_, item_data|
         item_data.files
       end.flatten
+
+      files.map { |file| File.join(@temp_dir, file) }
+    end
+
+    ##
+    # Returns the path to the primary file as given in the manifest at
+    # resource[href].
+    ##
+    def _item_primary_file(id_ref)
+      manifest.at(:resources).at("resource[identifier=#{id_ref}]").attr(:href)
     end
 
     ##
@@ -112,8 +124,9 @@ module Konbata
       files = resource.search(:file)
 
       filepaths = files.map { |file| file.attr(:href) }
-
       _extract_files(filepaths)
+
+      filepaths
     end
 
     ##
@@ -123,12 +136,10 @@ module Konbata
     def _extract_files(zip_files)
       zip = Zip::File.new(@filepath)
 
-      zip_files.map do |file|
+      zip_files.each do |file|
         FileUtils.mkdir_p(File.join(@temp_dir, File.dirname(file)))
         extract_to = File.join(@temp_dir, file)
         zip.find_entry(file).extract(extract_to)
-
-        extract_to
       end
     end
   end
