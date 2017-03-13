@@ -32,7 +32,7 @@ module Konbata
         page.identifier = Konbata.create_random_hex
         page.workflow_state = "active"
         page.page_name = @item.title
-        page.body = _page_content
+        page.body = _page_html
 
         page
       end
@@ -43,8 +43,23 @@ module Konbata
     ##
     # Reads the content from the item's primary file.
     ##
-    def _page_content
-      File.read(File.join(@item.directory, @item.primary_file))
+    def _page_html
+      html = File.read(File.join(@item.directory, @item.primary_file))
+
+      html.gsub(/<script.*<\/script>/mi, "")
+      html = _remove_unwanted_images(html)
+
+      html
+    end
+
+    def _remove_unwanted_images(html)
+      html_nodes = Nokogiri::HTML(html)
+
+      html_nodes.search(:img).each do |img|
+        img.remove if img.attr(:src) =~ /(help|exit)_button/i
+      end
+
+      html_nodes.to_html
     end
   end
 end

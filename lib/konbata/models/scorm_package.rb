@@ -66,6 +66,15 @@ module Konbata
     end
 
     ##
+    # Iterates through the SCORM package and returns any image files.
+    ##
+    def images
+      @images ||= begin
+        _all_files.select { |file| File.extname(file) =~ /\.png|\.jpg|\.jpeg/ }
+      end
+    end
+
+    ##
     # Returns a hash of each <item> in the manifest.
     # Keys are the <item> identifier.
     # Values are a hash of the title and identifierref.

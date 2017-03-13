@@ -19,8 +19,9 @@ module Konbata
   class ScormFile
     attr_reader :canvas_file
 
-    def initialize(file_path)
+    def initialize(file_path, canvas_file_path = nil)
       @file_path = file_path
+      @canvas_file_path = canvas_file_path
       @canvas_file = _create_canvas_file
     end
 
@@ -35,7 +36,7 @@ module Konbata
       canvas_file.identifier = Konbata.create_random_hex
       canvas_file.file_location = @file_path
       canvas_file.hidden = false
-      canvas_file.file_path = File.basename(@file_path)
+      canvas_file.file_path = @canvas_file_path || File.basename(@file_path)
 
       canvas_file
     end

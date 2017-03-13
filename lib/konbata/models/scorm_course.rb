@@ -35,6 +35,7 @@ module Konbata
         canvas_course.files << scorm_file.canvas_file
 
         _pdfs_to_files.each { |file| canvas_course.files << file.canvas_file }
+        _images_to_files.each { |file| canvas_course.files << file.canvas_file }
         _items_to_pages.each { |page| canvas_course.pages << page.canvas_page }
 
         canvas_course
@@ -52,6 +53,14 @@ module Konbata
     def _pdfs_to_files
       @package.pdfs.map do |pdf|
         ScormFile.new(pdf)
+      end
+    end
+
+    # Creates a ScormFile object for each element in @package.images and returns
+    # them as an array.
+    def _images_to_files
+      @package.images.map do |image|
+        ScormFile.new(image, File.join("images", File.basename(image)))
       end
     end
 
