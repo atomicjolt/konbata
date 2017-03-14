@@ -41,7 +41,21 @@ module Konbata
 
         _pdfs_to_files.each { |file| canvas_course.files << file.canvas_file }
         _images_to_files.each { |file| canvas_course.files << file.canvas_file }
-        _items_to_pages.each { |page| canvas_course.pages << page.canvas_page }
+
+        canvas_module = CanvasModule.create(@package.course_title)
+
+        _items_to_pages.each do |page|
+          canvas_course.pages << page.canvas_page
+
+          module_item = CanvasModuleItem.create(
+            page.canvas_page.title,
+            page.canvas_page.identifier,
+          )
+
+          canvas_module.module_items << module_item
+        end
+
+        canvas_course.canvas_modules << canvas_module
 
         canvas_course
       end

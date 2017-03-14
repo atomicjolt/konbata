@@ -17,10 +17,10 @@ require "canvas_cc"
 
 module Konbata
   class CanvasModule
-    def self.create(volume)
+    def self.create(title)
       canvas_module = CanvasCc::CanvasCC::Models::CanvasModule.new
       canvas_module.identifier = Konbata.create_random_hex
-      canvas_module.title = "Volume #{volume}"
+      canvas_module.title = title
       canvas_module.workflow_state = "active"
 
       canvas_module

@@ -66,7 +66,7 @@ module Konbata
 
     def _convert_source_files(canvas_course)
       @volumes.each do |volume, source_files|
-        canvas_module = Konbata::CanvasModule.create(volume)
+        canvas_module = Konbata::CanvasModule.create("Volume #{volume}")
 
         source_files.each do |source_file|
           source_file.convert(canvas_course, canvas_module)
