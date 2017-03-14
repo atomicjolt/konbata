@@ -46,12 +46,22 @@ module Konbata
     def _page_html
       html = File.read(File.join(@item.directory, @item.primary_file))
 
-      html.gsub(/<script.*<\/script>/mi, "")
+      html = _remove_script_tags(html)
       html = _remove_unwanted_images(html)
 
       html
     end
 
+    ##
+    # Removes all script tags from the given HTML.
+    ##
+    def _remove_script_tags(html)
+      html.gsub(/<script.*<\/script>/mi, "")
+    end
+
+    ##
+    # Removes the help and exit button images from the given HTML.
+    ##
     def _remove_unwanted_images(html)
       html_nodes = Nokogiri::HTML(html)
 

@@ -29,7 +29,7 @@ module Konbata
 
     def canvas_course
       @canvas_course ||= begin
-        canvas_course = CanvasCourse.create(@package.course_title)
+        canvas_course = CanvasCourse.create(@package.course_title, "modules")
         scorm_file = ScormFile.new(@package.filepath)
 
         canvas_course.files << scorm_file.canvas_file
@@ -68,8 +68,9 @@ module Konbata
     # them as an array.
     def _items_to_pages
       @package.items.map do |_, item_data|
+        next if item_data.title =~ /orientation/i
         ScormPage.new(item_data)
-      end
+      end.compact
     end
   end
 end
