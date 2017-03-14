@@ -50,10 +50,17 @@ module Konbata
     end
 
     ##
-    # Reads the course title from the manifest file.
+    # Returns the course title from the manifest file.
     ##
     def course_title
       @course_title ||= default_organization.at(:title).text
+    end
+
+    ##
+    # Returns the course code from the manifest file.
+    ##
+    def course_code
+      @course_code ||= manifest.at(:manifest).attr(:identifier)
     end
 
     ##

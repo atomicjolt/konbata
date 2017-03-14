@@ -17,10 +17,10 @@ require "canvas_cc"
 
 module Konbata
   class CanvasCourse
-    def self.create(title, default_view = "")
+    def self.create(title, course_code = title, default_view = "")
       canvas_course = CanvasCc::CanvasCC::Models::Course.new
       canvas_course.identifier = Konbata.create_random_hex
-      canvas_course.course_code = title
+      canvas_course.course_code = course_code
       canvas_course.title = title
       canvas_course.default_view = default_view
 

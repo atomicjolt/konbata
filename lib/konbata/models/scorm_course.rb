@@ -29,7 +29,12 @@ module Konbata
 
     def canvas_course
       @canvas_course ||= begin
-        canvas_course = CanvasCourse.create(@package.course_title, "modules")
+        canvas_course = CanvasCourse.create(
+          @package.course_title,
+          @package.course_code,
+          "modules"
+        )
+
         scorm_file = ScormFile.new(@package.filepath)
 
         canvas_course.files << scorm_file.canvas_file
