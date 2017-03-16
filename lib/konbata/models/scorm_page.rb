@@ -41,6 +41,18 @@ module Konbata
     private
 
     ##
+    # Returns the path to the primary PDF file for @item.
+    # The primary PDF is the PDF file found at the top level of @item's folder.
+    ##
+    def _primary_pdf
+      pdf = @item.files.detect do |file|
+        file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
+      end
+
+      File.basename(pdf)
+    end
+
+    ##
     # Reads the content from the item's primary file.
     ##
     def _page_html
@@ -48,6 +60,7 @@ module Konbata
 
       html = _remove_script_tags(html)
       html = _remove_unwanted_images(html)
+      html = _embed_pdf(html)
 
       html
     end
@@ -70,6 +83,19 @@ module Konbata
       end
 
       html_nodes.to_html
+    end
+
+    ##
+    # Removes the iframe and adds the HTML to show the PDF for @item.
+    ##
+    def _embed_pdf(html)
+      pdf_html = <<~HEREDOC
+        <p style="text-align: left">
+          Download: <a href="#{_primary_pdf}">#{_primary_pdf}</a>
+        </p>
+      HEREDOC
+
+      html.sub(/<iframe.*<\/iframe>/mi, pdf_html)
     end
   end
 end
