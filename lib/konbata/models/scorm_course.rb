@@ -15,6 +15,7 @@
 
 require "zip"
 require "konbata/models/canvas_course"
+require "konbata/models/scorm_package"
 require "konbata/models/scorm_file"
 
 module Konbata
@@ -22,17 +23,20 @@ module Konbata
     attr_reader :canvas_course
 
     def initialize(package_path)
-      @package_path = package_path
-      # TODO: Consider using <title> node for course name.
-      @course_title = File.basename(package_path, ".zip")
+      @package = ScormPackage.new(package_path)
       @canvas_course = _create_canvas_course
     end
 
     private
 
     def _create_canvas_course
-      canvas_course = CanvasCourse.create(@course_title)
-      scorm_file = ScormFile.new(@package_path)
+      canvas_course = CanvasCourse.create(
+        @package.course_title,
+        course_code: @package.course_code,
+        default_view: "assignments",
+      )
+
+      scorm_file = ScormFile.new(@package.filepath)
 
       canvas_course.files << scorm_file.canvas_file
       _scorm_pdfs.each { |file| canvas_course.files << file.canvas_file }
@@ -48,8 +52,8 @@ module Konbata
     def _scorm_pdfs
       temp_dir = Dir.mktmpdir
 
-      pdf_entries = Zip::File.new(@package_path).entries.select do |entry|
-        File.extname(entry.name) == ".pdf"
+      pdf_entries = Zip::File.new(@package.filepath).entries.select do |entry|
+        File.extname(entry.name) =~ /\.pdf/i
       end
 
       pdf_entries.map do |entry|
