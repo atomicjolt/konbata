@@ -68,7 +68,7 @@ module Konbata
     ##
     def pdfs
       @pdfs ||= begin
-        _all_files.select { |file| File.extname(file) == ".pdf" }
+        _all_files.select { |file| File.extname(file) =~ /\.pdf/i }
       end
     end
 
@@ -77,7 +77,7 @@ module Konbata
     ##
     def images
       @images ||= begin
-        _all_files.select { |file| File.extname(file) =~ /\.png|\.jpg|\.jpeg/ }
+        _all_files.select { |file| File.extname(file) =~ /\.png|\.jpg|\.jpeg/i }
       end
     end
 

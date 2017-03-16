@@ -32,7 +32,7 @@ module Konbata
         canvas_course = CanvasCourse.create(
           @package.course_title,
           @package.course_code,
-          "modules"
+          "modules",
         )
 
         scorm_file = ScormFile.new(@package.filepath)
