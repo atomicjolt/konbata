@@ -42,7 +42,9 @@ module Konbata
     ##
     def pdfs
       @pdfs ||= begin
-        _all_files.select { |file| File.extname(file) =~ /\.pdf/i }
+        Zip::File.new(@filepath).entries.select do |entry|
+          File.extname(entry.name) =~ /\.pdf/i
+        end
       end
     end
 

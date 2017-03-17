@@ -52,11 +52,7 @@ module Konbata
     def _scorm_pdfs
       temp_dir = Dir.mktmpdir
 
-      pdf_entries = Zip::File.new(@package.filepath).entries.select do |entry|
-        File.extname(entry.name) =~ /\.pdf/i
-      end
-
-      pdf_entries.map do |entry|
+      @package.pdfs.map do |entry|
         extract_to = File.join(temp_dir, File.basename(entry.name))
         entry.extract(extract_to)
         ScormFile.new(extract_to)
