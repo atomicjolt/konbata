@@ -16,18 +16,33 @@
 require_relative "../helpers/spec_helper"
 
 describe Konbata do
-  before do
-    @metadata =
-      Konbata::UploadCourse.metadata_from_file(fixture_path("IMSCC.imscc"))
-  end
-
   describe "UploadCourse" do
-    describe "metadata_from_file" do
+    before do
+      @metadata =
+        Konbata::UploadCourse.metadata_from_file(fixture_path("IMSCC.imscc"))
+    end
+
+    describe "#metadata_from_file" do
       it "should fetch course title from imscc xml settings file" do
         assert_equal("Course Title", @metadata[:title])
       end
+
       it "should fetch course code from imscc xml settings file" do
         assert_equal("0A123", @metadata[:course_code])
+      end
+    end
+
+    describe "#scorm_launch_url" do
+      it "should return the correct launch URL" do
+        upload_course = Konbata::UploadCourse.new(
+          Konbata::CanvasCourse.create("Test"),
+        )
+        package_id = "123"
+
+        assert_equal(
+          upload_course.scorm_launch_url(package_id),
+          "#{Konbata.configuration.scorm_launch_url}?course_id=#{package_id}",
+        )
       end
     end
   end

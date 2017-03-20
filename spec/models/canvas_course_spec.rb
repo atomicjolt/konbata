@@ -19,25 +19,52 @@ require "konbata/models/canvas_course"
 describe Konbata do
   describe "CanvasCourse" do
     describe "#create" do
-      before do
-        @title = "Test Course"
-        @canvas_course = Konbata::CanvasCourse.create(@title)
+      describe "without opts" do
+        before do
+          @title = "Test Course"
+          @canvas_course = Konbata::CanvasCourse.create(@title)
+        end
+
+        it "should return a canvas_cc course" do
+          assert_kind_of(CanvasCc::CanvasCC::Models::Course, @canvas_course)
+        end
+
+        it "should give the canvas_cc course an identifier" do
+          refute_nil(@canvas_course.identifier)
+        end
+
+        it "should give the canvas_cc course a default course code" do
+          assert_equal(@title, @canvas_course.course_code)
+        end
+
+        it "should give the canvas_cc course a title" do
+          assert_equal(@title, @canvas_course.title)
+        end
+
+        it "should not give the canvas_cc course a default view" do
+          assert_nil(@canvas_course.default_view)
+        end
       end
 
-      it "should return a canvas_cc course" do
-        assert_kind_of(CanvasCc::CanvasCC::Models::Course, @canvas_course)
-      end
+      describe "with opts" do
+        before do
+          @title = "Test Course"
+          @course_code = "test-course-123"
+          @default_view = "modules"
+          @canvas_course = Konbata::CanvasCourse.create(
+            @title,
+            course_code: @course_code,
+            default_view: @default_view,
+          )
+        end
 
-      it "should give the canvas_cc course an identifier" do
-        refute_nil(@canvas_course.identifier)
-      end
+        it "should give the canvas_cc course the course_code in opts" do
+          assert_equal(@course_code, @canvas_course.course_code)
+        end
 
-      it "should give the canvas_cc course a course code" do
-        assert_equal(@title, @canvas_course.course_code)
-      end
-
-      it "should give the canvas_cc course a title" do
-        assert_equal(@title, @canvas_course.title)
+        it "should give the canvas_cc course a default view" do
+          assert_equal(@default_view, @canvas_course.default_view)
+        end
       end
     end
   end

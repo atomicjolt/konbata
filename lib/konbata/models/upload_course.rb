@@ -22,6 +22,8 @@ module Konbata
   class UploadCourse
     attr_reader :canvas_course
 
+    POINTS_POSSIBLE = 100
+
     def initialize(course_resource)
       @course_resource = course_resource
     end
@@ -82,7 +84,9 @@ module Konbata
             file: file,
           },
           SharedAuthorization: Konbata.configuration.scorm_shared_auth,
-        )
+        ) do |resp|
+          JSON.parse(resp.body)["response"]
+        end
       end
     end
 
@@ -107,7 +111,8 @@ module Konbata
 
       if File.exist?(source_for_imscc)
         puts "Creating Scorm: #{name}"
-        upload_scorm_package(source_for_imscc, @course_resource.id)
+        response = upload_scorm_package(source_for_imscc, @course_resource.id)
+        create_scorm_assignment_external(response, @course_resource.id)
         puts "Done creating scorm: #{name}"
       end
     end
@@ -135,6 +140,38 @@ module Konbata
           )
         end
       end
+    end
+
+    ##
+    # Assembles the launch url with the course_id
+    ##
+    def scorm_launch_url(package_id)
+      "#{Konbata.configuration.scorm_launch_url}?course_id=#{package_id}"
+    end
+
+    ##
+    # Creates a scorm assignment using the Canvas api
+    ##
+    def create_scorm_assignment_external(upload_response, course_id)
+      url = scorm_launch_url(upload_response["package_id"])
+
+      payload = {
+        assignment__submission_types__: ["external_tool"],
+        assignment__integration_id__: upload_response["package_id"],
+        assignment__integration_data__: {
+          provider: "atomic-scorm",
+        },
+        assignment__external_tool_tag_attributes__: {
+          url: url,
+        },
+        assignment__points_possible__: POINTS_POSSIBLE,
+      }
+
+      UploadCourse.client.create_assignment(
+        course_id,
+        upload_response["title"],
+        payload,
+      )
     end
   end
 end
