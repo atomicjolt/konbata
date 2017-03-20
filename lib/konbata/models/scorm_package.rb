@@ -25,42 +25,17 @@ module Konbata
     end
 
     ##
-    # Finds the SCORM manifest in the zip package and returns it as a Nokogiri
-    # object.
-    ##
-    def manifest
-      @manifest ||= begin
-        temp_dir = Dir.mktmpdir
-        manifest_path = File.join(temp_dir, MANIFEST_FILENAME)
-
-        Zip::File.new(@filepath).entries.detect do |entry|
-          entry.name == MANIFEST_FILENAME
-        end.extract(manifest_path)
-
-        File.open(manifest_path) { |file| Nokogiri::XML(file) }
-      end
-    end
-
-    ##
-    # Returns the default organization from the manifest as a Nokogiri object.
-    ##
-    def default_organization
-      default_organization_id = manifest.at(:organizations).attr(:default)
-      manifest.at("organization[identifier='#{default_organization_id}']")
-    end
-
-    ##
     # Returns the course title from the manifest file.
     ##
     def course_title
-      @course_title ||= default_organization.at(:title).text
+      @course_title ||= _default_organization.at(:title).text
     end
 
     ##
     # Returns the course code from the manifest file.
     ##
     def course_code
-      @course_code ||= manifest.at(:manifest).attr(:identifier)
+      @course_code ||= _manifest.at(:manifest).attr(:identifier)
     end
 
     ##
@@ -88,7 +63,7 @@ module Konbata
     ##
     def items
       @items ||= begin
-        default_organization.search(:item).each_with_object({}) do |item, items|
+        _default_organization.search(:item).each_with_object({}) do |item, items|
           id = item.attr(:identifier)
           id_ref = item.attr(:identifierref)
           title = item.at(:title).text
@@ -113,14 +88,43 @@ module Konbata
     private
 
     ##
+    # Finds the SCORM manifest in the zip package and returns it as a Nokogiri
+    # object.
+    ##
+    def _manifest
+      @manifest ||= begin
+        temp_dir = Dir.mktmpdir
+        manifest_path = File.join(temp_dir, MANIFEST_FILENAME)
+
+        Zip::File.new(@filepath).entries.detect do |entry|
+          entry.name == MANIFEST_FILENAME
+        end.extract(manifest_path)
+
+        File.open(manifest_path) { |file| Nokogiri::XML(file) }
+      end
+    end
+
+    ##
+    # Returns the default organization from the manifest as a Nokogiri object.
+    ##
+    def _default_organization
+      @default_organization = begin
+        default_organization_id = _manifest.at(:organizations).attr(:default)
+        _manifest.at("organization[identifier='#{default_organization_id}']")
+      end
+    end
+
+    ##
     # Returns a flat list of all resource files in the SCORM package.
     ##
     def _all_files
-      files = items.map do |_, item_data|
-        item_data.files
-      end.flatten
+      @files = begin
+        files = items.map do |_, item_data|
+          item_data.files
+        end.flatten
 
-      files.map { |file| File.join(@temp_dir, file) }
+        files.map { |file| File.join(@temp_dir, file) }
+      end
     end
 
     ##
@@ -128,7 +132,7 @@ module Konbata
     # resource[href].
     ##
     def _item_primary_file(id_ref)
-      manifest.at(:resources).at("resource[identifier=#{id_ref}]").attr(:href)
+      _manifest.at(:resources).at("resource[identifier=#{id_ref}]").attr(:href)
     end
 
     ##
@@ -136,13 +140,15 @@ module Konbata
     # id_ref.
     ##
     def _item_files(id_ref)
-      resource = manifest.at(:resources).at("resource[identifier=#{id_ref}]")
-      files = resource.search(:file)
+      @item_files = begin
+        resource = _manifest.at(:resources).at("resource[identifier=#{id_ref}]")
+        files = resource.search(:file)
 
-      filepaths = files.map { |file| file.attr(:href) }
-      _extract_files(filepaths)
+        filepaths = files.map { |file| file.attr(:href) }
+        _extract_files(filepaths)
 
-      filepaths
+        filepaths
+      end
     end
 
     ##
