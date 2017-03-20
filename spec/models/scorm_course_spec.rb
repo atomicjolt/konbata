@@ -37,29 +37,47 @@ describe Konbata do
       end
     end
 
-    describe "#_extract_pdfs" do
-      def scorm_course_pdfs(zip_name)
-        scorm_course = Konbata::ScormCourse.new(fixture_path(zip_name))
+    describe "#_scorm_pdfs" do
+      it "should return canvas_cc files" do
+        scorm_zip = fixture_path("scorm_with_1_pdf.zip")
+        scorm_course = Konbata::ScormCourse.new(scorm_zip)
 
-        scorm_course.canvas_course.files.select do |file|
-          File.extname(file.file_location) == ".pdf"
+        pdf_file = scorm_course.canvas_course.files.detect do |file|
+          File.extname(file.file_location) =~ /\.pdf/i
         end
+
+        assert_kind_of(CanvasCc::CanvasCC::Models::CanvasFile, pdf_file)
       end
 
       it "should return no files if there are no PDFs" do
-        pdf_files = scorm_course_pdfs("scorm_with_no_pdfs.zip")
+        scorm_zip = fixture_path("scorm_with_no_pdfs.zip")
+        scorm_course = Konbata::ScormCourse.new(scorm_zip)
+
+        pdf_files = scorm_course.canvas_course.files.select do |file|
+          File.extname(file.file_location) =~ /\.pdf/i
+        end
 
         assert_empty(pdf_files)
       end
 
       it "should return a single file if there is 1 PDF" do
-        pdf_files = scorm_course_pdfs("scorm_with_1_pdf.zip")
+        scorm_zip = fixture_path("scorm_with_1_pdf.zip")
+        scorm_course = Konbata::ScormCourse.new(scorm_zip)
+
+        pdf_files = scorm_course.canvas_course.files.select do |file|
+          File.extname(file.file_location) =~ /\.pdf/i
+        end
 
         assert_equal(1, pdf_files.size)
       end
 
-      it "should return a multiple files if there are multiple PDFs" do
-        pdf_files = scorm_course_pdfs("scorm_with_3_pdfs.zip")
+      it "should return multiple files if there are multiple PDFs" do
+        scorm_zip = fixture_path("scorm_with_3_pdfs.zip")
+        scorm_course = Konbata::ScormCourse.new(scorm_zip)
+
+        pdf_files = scorm_course.canvas_course.files.select do |file|
+          File.extname(file.file_location) =~ /\.pdf/i
+        end
 
         assert_equal(3, pdf_files.size)
       end
