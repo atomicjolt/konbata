@@ -20,7 +20,7 @@ describe Konbata do
   describe "ScormPackage" do
     before do
       @scorm_package = Konbata::ScormPackage.new(
-        fixture_path("scorm_with_3_pdfs.zip"),
+        fixture_path("scorm_with_1_pdf.zip"),
       )
     end
 
@@ -41,12 +41,8 @@ describe Konbata do
         assert_kind_of(Array, @scorm_package.pdfs)
       end
 
-      it "should return an array of ZipEntry objects" do
-        assert_kind_of(Zip::Entry, @scorm_package.pdfs.first)
-      end
-
       it "should return the correct number of PDF files" do
-        assert_equal(3, @scorm_package.pdfs.size)
+        assert_equal(1, @scorm_package.pdfs.size)
       end
     end
   end

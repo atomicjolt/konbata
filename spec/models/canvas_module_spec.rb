@@ -20,7 +20,7 @@ describe Konbata do
     describe "self.create" do
       before do
         @volume = "3"
-        @module = Konbata::CanvasModule.create(@volume)
+        @module = Konbata::CanvasModule.create("Volume #{@volume}")
       end
 
       it "should return a canvas_cc module" do
