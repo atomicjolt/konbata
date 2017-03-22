@@ -24,7 +24,6 @@ module Konbata
     attr_reader :scorm_launch_url
     attr_reader :scorm_shared_auth
     attr_reader :request_timeout
-    attr_reader :libre_office_path
     DEFAULT_TIMEOUT = 1_800 # 30 minutes
 
     def initialize
@@ -36,7 +35,6 @@ module Konbata
       @scorm_shared_auth = Configuration._config[:scorm_shared_auth]
       @request_timeout =
         Configuration._config[:request_timeout] || DEFAULT_TIMEOUT
-      @libre_office_path = Configuration._config[:libre_office_path]
     end
 
     def self._config
