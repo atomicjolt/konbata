@@ -78,9 +78,13 @@ Along with generating Canvas pages, the original source files will be added to t
 
 Any `.zip` files placed at the top level of the `sources` directory will be processed as SCORM packages.
 
-Only basic support for SCORM packages is available as of right now. For each SCORM zip found, Konbata will create a skeleton Canvas course and create an .imscc file for that course. It will add the original SCORM package to the course's files and, when running the `upload` command, Konbata will also make the appropriate calls to upload the SCORM package to the SCORM manager designated in the `konbata.yml` file.
-
-Konbata also adds any PDF files found in the SCORM package to the course's files.
+Only basic support for SCORM packages is available as of right now. For each SCORM zip found, Konbata will do the following:
+  - Create a skeleton Canvas course and create an .imscc file for that course.
+  - Add the original SCORM package to the course's files.
+  - Add any PDF files found in the SCORM package to the course's files.
+  - When running the `upload` command, make the appropriate calls to upload the SCORM package to the SCORM manager designated in the `konbata.yml` file.
+  - Hide all of the course's tabs except for "Home" and "Assignments".
+  - Set the default view to "Assignments".
 
 #### Running
 
