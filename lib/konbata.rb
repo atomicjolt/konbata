@@ -17,8 +17,6 @@ require "canvas_cc"
 require "zip"
 
 require "konbata/configuration"
-require "konbata/reporter"
-require "konbata/models/doc_course"
 require "konbata/models/scorm_course"
 require "konbata/models/upload_course"
 
