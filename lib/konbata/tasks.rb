@@ -32,7 +32,6 @@ CONVERTED_FILES = Rake::FileList.new("#{Konbata::OUTPUT_DIR}/*.imscc")
 #
 #   require "konbata/tasks"
 #   Konbata::Tasks.install_tasks
-#
 ##
 
 def source_for_upload_log(upload_log)
@@ -58,11 +57,6 @@ module Konbata
 
     def self.install_tasks
       namespace :konbata do
-        desc "Generate Canvas courses from folders in source directory."
-        task :doc do
-          Konbata.convert_docs
-        end
-
         desc "Find and process SCORM packages"
         task :scorm do
           Konbata.convert_scorm
