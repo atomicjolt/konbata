@@ -15,23 +15,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
 
 # Konbata Converter
 
-Konbata converts .doc and .docx files into Canvas .imscc packages. It also offers basic support for converting SCORM packages.
+Konbata converts SCORM packages into Canvas courses. It can generate a .imscc file and also create a Canvas course in a Canvas instance.
 
 ## Installation
 
-Konbata depends on LibreOffice for conversion of .doc and .docx source files. You'll need to download and install it to your machine. You can do so [here](https://www.libreoffice.org/download/download/). Konbata was tested against LibreOffice version 5.3.0.
-
 After checking out the repo, run `bundle install` to install dependencies.
 
-Create a `konbata.yml` file and add credentials:
+Create a `konbata.yml` file and add credentials for uploading to Canvas:
 ```yaml
-# --LibreOffice setup--
-
-# Generally looks like /Applications/LibreOffice.app/Contents/MacOS/soffice
-:libre_office_path: <LibreOffice Path>
-
-# --Canvas upload setup--
-
 # e.g. http://<canvas-url>/api
 :canvas_url: <canvas instance api url>
 
@@ -52,30 +43,6 @@ Create a `konbata.yml` file and add credentials:
 
 ## Usage
 
-#### .doc/.docx Files
-Add any .doc or .docx files you want to process into the `sources` directory inside the Konbata project directory. It expects a specific directory structure for the source files that are added to that `sources` folder.
-
-Each directory placed in the `sources` folder should include in it's name 2 pieces of data:
-  - "Course - ####," (e.g. "Course - ABC123"). "####" will be used as a course identifier.
-  - "Volume " followed by a volume number (e.g. "Volume 1"). The number will be used as a volume number.
-
-Each course detected will be turned into a separate .imscc file.
-
-Each volume detected will be turned into a Canvas module inside of the appropriate course's .imscc file.
-
-For each directory placed in the `sources` folder, Konbata will iterate through all files (though not recursively) and look for any files that match the following patterns:
-```ruby
-/front/i
-/glos/i
-/u\d+/i
-```
-
-For each file found that matches one of the above patterns, Konbata will generate an appropriately named Canvas page and add it to the appropriate ouput .imscc file.
-
-Along with generating Canvas pages, the original source files will be added to the Canvas course's files and will be available in the Files section.
-
-#### SCORM Packages
-
 Any `.zip` files placed at the top level of the `sources` directory will be processed as SCORM packages.
 
 Only basic support for SCORM packages is available as of right now. For each SCORM zip found, Konbata will create a skeleton Canvas course and create an .imscc file for that course. It will add the original SCORM package to the course's files and, when running the `upload` command, Konbata will also make the appropriate calls to upload the SCORM package to the SCORM manager designated in the `konbata.yml` file.
@@ -88,7 +55,6 @@ To run Konbata, use the following Rake tasks:
 
 Convert files:
 ```sh
-rake konbata:doc # For processing .doc and .docx files.
 rake konbata:scorm # For processing SCORM packages.
 ```
 
