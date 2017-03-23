@@ -16,6 +16,9 @@
 require "canvas_cc"
 
 module Konbata
+  ##
+  # Creates and returns a canvas_cc module object.
+  ##
   class CanvasModule
     def self.create(volume)
       canvas_module = CanvasCc::CanvasCC::Models::CanvasModule.new

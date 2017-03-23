@@ -17,6 +17,9 @@ require "canvas_cc"
 
 module Konbata
   class CanvasCourse
+    ##
+    # Creates and returns a canvas_cc course object.
+    ##
     def self.create(title, opts = {})
       canvas_course = CanvasCc::CanvasCC::Models::Course.new
       canvas_course.identifier = Konbata.create_random_hex
