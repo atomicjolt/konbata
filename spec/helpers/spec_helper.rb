@@ -18,8 +18,6 @@ require "minitest/reporters"
 Minitest::Reporters.use!
 
 require "konbata"
-require "konbata/models/canvas_module"
-require "konbata/models/canvas_module_item"
 
 def fixture_path(fixture)
   File.absolute_path(File.join("spec", "fixtures", fixture))
