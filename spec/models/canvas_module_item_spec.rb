@@ -44,7 +44,7 @@ describe Konbata do
         assert_equal(@identifierref, @module_item.identifierref)
       end
 
-      it "should give the module item a workflow state of 'acvive'" do
+      it "should give the module item a workflow state of 'active'" do
         assert_equal("active", @module_item.workflow_state)
       end
     end
