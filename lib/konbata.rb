@@ -49,7 +49,7 @@ module Konbata
         File.rename(package_path, formatted_path)
         package_path = formatted_path
       end
-      course = ScormCourse.new(package_path)
+      course = Konbata::ScormCourse.new(package_path)
       create_imscc(course)
     end
   end

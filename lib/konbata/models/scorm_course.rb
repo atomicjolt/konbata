@@ -23,20 +23,20 @@ module Konbata
     attr_reader :canvas_course
 
     def initialize(package_path)
-      @package = ScormPackage.new(package_path)
+      @package = Konbata::ScormPackage.new(package_path)
       @canvas_course = _create_canvas_course
     end
 
     private
 
     def _create_canvas_course
-      canvas_course = CanvasCourse.create(
+      canvas_course = Konbata::CanvasCourse.create(
         File.basename(@package.filepath, ".zip"),
         course_code: @package.course_code,
         default_view: "assignments",
       )
 
-      scorm_file = ScormFile.new(@package.filepath)
+      scorm_file = Konbata::ScormFile.new(@package.filepath)
 
       canvas_course.files << scorm_file.canvas_file
       _scorm_pdfs.each { |file| canvas_course.files << file.canvas_file }
@@ -55,7 +55,7 @@ module Konbata
       @package.pdfs.map do |entry|
         extract_to = File.join(temp_dir, File.basename(entry.name))
         entry.extract(extract_to)
-        ScormFile.new(extract_to)
+        Konbata::ScormFile.new(extract_to)
       end
     end
   end
