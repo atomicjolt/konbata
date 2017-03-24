@@ -19,8 +19,12 @@ require "konbata/models/scorm_file"
 describe Konbata do
   describe "ScormFile" do
     before do
-      @file_path = "sources/Test_Package.zip"
-      @scorm_file = Konbata::ScormFile.new(@file_path)
+      @local_file_path = "package/module/file.pdf"
+      @canvas_file_path = "module/file.pdf"
+      @scorm_file = Konbata::ScormFile.new(
+        @file_path,
+        @canvas_file_path,
+      )
     end
 
     describe "#_create_canvas_file" do
@@ -45,7 +49,7 @@ describe Konbata do
 
       it "should give the canvas_cc file a file path" do
         assert_equal(
-          File.basename(@file_path),
+          @canvas_file_path,
           @scorm_file.canvas_file.file_path,
         )
       end
