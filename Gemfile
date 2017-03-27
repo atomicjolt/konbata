@@ -4,4 +4,3 @@ source "https://rubygems.org"
 gemspec
 
 gem "canvas_cc", git: "https://github.com/atomicjolt/canvas_cc.git"
-gem "libreconv", git: "https://github.com/conradbeach/libreconv.git"

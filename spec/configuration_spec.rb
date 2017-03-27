@@ -49,9 +49,5 @@ describe Konbata do
     it "should have a request_timeout attribute" do
       assert_respond_to(@config, :request_timeout)
     end
-
-    it "should have a libre_office_path attribute" do
-      assert_respond_to(@config, :libre_office_path)
-    end
   end
 end

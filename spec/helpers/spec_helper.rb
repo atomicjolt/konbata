@@ -18,17 +18,9 @@ require "minitest/reporters"
 Minitest::Reporters.use!
 
 require "konbata"
-require_relative "../mocks/mock_doc_course"
-require_relative "../mocks/mock_cover_page_file"
-require_relative "../mocks/mock_glossary_file"
-require_relative "../mocks/mock_source_file"
-require_relative "../mocks/mock_unit_file"
+require "konbata/models/canvas_module"
+require "konbata/models/canvas_module_item"
 
 def fixture_path(fixture)
   File.absolute_path(File.join("spec", "fixtures", fixture))
-end
-
-# Suppress reporting.
-module Kernel
-  def puts(*); end
 end
