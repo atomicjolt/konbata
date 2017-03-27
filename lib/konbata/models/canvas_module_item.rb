@@ -17,6 +17,9 @@ require "canvas_cc"
 
 module Konbata
   class CanvasModuleItem
+    ##
+    # Creates and returns a canvas_cc module item object.
+    ##
     def self.create(title, identifierref)
       module_item = CanvasCc::CanvasCC::Models::ModuleItem.new
       module_item.title = title

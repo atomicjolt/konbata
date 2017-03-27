@@ -37,6 +37,9 @@ module Konbata
         Configuration._config[:request_timeout] || DEFAULT_TIMEOUT
     end
 
+    ##
+    # Reads and memoizes the data in the config file.
+    ##
     def self._config
       @config ||= if File.exists? "konbata.yml"
                     YAML::safe_load(File.read("konbata.yml"), [Symbol])

@@ -38,6 +38,10 @@ module Konbata
     "aj_" + SecureRandom.hex(32)
   end
 
+  ##
+  # Iterates through every SCORM package in the sources directory and converts
+  # them to a Canvas .imscc file.
+  ##
   def self.convert_scorm
     FileUtils.mkdir_p(OUTPUT_DIR)
 
@@ -49,11 +53,14 @@ module Konbata
         File.rename(package_path, formatted_path)
         package_path = formatted_path
       end
-      course = ScormCourse.new(package_path)
+      course = Konbata::ScormCourse.new(package_path)
       create_imscc(course)
     end
   end
 
+  ##
+  # Creates an .imscc file for the given course object.
+  ##
   def self.create_imscc(course)
     imscc = CanvasCc::CanvasCC::CartridgeCreator.
       new(course.canvas_course).
@@ -61,6 +68,9 @@ module Konbata
     FileUtils.cp(imscc, OUTPUT_DIR)
   end
 
+  ##
+  # Uploads a course to Canvas.
+  ##
   def self.initialize_course(canvas_file_path)
     metadata = Konbata::UploadCourse.metadata_from_file(canvas_file_path)
     course = Konbata::UploadCourse.from_metadata(metadata)

@@ -16,38 +16,36 @@
 require_relative "../helpers/spec_helper"
 require "konbata/models/scorm_package"
 
-describe Konbata do
-  describe "ScormPackage" do
-    before do
-      @scorm_package = Konbata::ScormPackage.new(
-        fixture_path("scorm_with_3_pdfs.zip"),
-      )
+describe Konbata::ScormPackage do
+  before do
+    @scorm_package = Konbata::ScormPackage.new(
+      fixture_path("scorm_with_3_pdfs.zip"),
+    )
+  end
+
+  describe "#course_title" do
+    it "returns the course title from the manifest" do
+      assert_equal("123 Sample Course", @scorm_package.course_title)
+    end
+  end
+
+  describe "#course_code" do
+    it "returns the course code from the manifest" do
+      assert_equal("123_Sample_Course", @scorm_package.course_code)
+    end
+  end
+
+  describe "#pdfs" do
+    it "returns an array of the PDF files in the SCORM package" do
+      assert_kind_of(Array, @scorm_package.pdfs)
     end
 
-    describe "#course_title" do
-      it "should return the course title from the manifest" do
-        assert_equal("123 Sample Course", @scorm_package.course_title)
-      end
+    it "returns an array of ZipEntry objects" do
+      assert_kind_of(Zip::Entry, @scorm_package.pdfs.first)
     end
 
-    describe "#course_code" do
-      it "should return the course code from the manifest" do
-        assert_equal("123_Sample_Course", @scorm_package.course_code)
-      end
-    end
-
-    describe "#pdfs" do
-      it "should return an array of the PDF files in the SCORM package" do
-        assert_kind_of(Array, @scorm_package.pdfs)
-      end
-
-      it "should return an array of ZipEntry objects" do
-        assert_kind_of(Zip::Entry, @scorm_package.pdfs.first)
-      end
-
-      it "should return the correct number of PDF files" do
-        assert_equal(3, @scorm_package.pdfs.size)
-      end
+    it "returns the correct number of PDF files" do
+      assert_equal(3, @scorm_package.pdfs.size)
     end
   end
 end
