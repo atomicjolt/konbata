@@ -36,7 +36,10 @@ module Konbata
         default_view: "assignments",
       )
 
-      scorm_file = Konbata::ScormFile.new(@package.filepath)
+      scorm_file = Konbata::ScormFile.new(
+        @package.filepath,
+        File.basename(@package.filepath),
+      )
 
       canvas_course.files << scorm_file.canvas_file
       _scorm_pdfs.each { |file| canvas_course.files << file.canvas_file }
@@ -53,9 +56,10 @@ module Konbata
       temp_dir = Dir.mktmpdir
 
       @package.pdfs.map do |entry|
-        extract_to = File.join(temp_dir, File.basename(entry.name))
+        extract_to = File.join(temp_dir, entry.name)
+        FileUtils.mkdir_p(File.dirname(extract_to))
         entry.extract(extract_to)
-        Konbata::ScormFile.new(extract_to)
+        Konbata::ScormFile.new(extract_to, entry.name)
       end
     end
   end

@@ -16,11 +16,16 @@
 require_relative "../helpers/spec_helper"
 require "konbata/models/scorm_file"
 
-describe Konbata::ScormFile do
-  before do
-    @file_path = "sources/Test_Package.zip"
-    @scorm_file = Konbata::ScormFile.new(@file_path)
-  end
+describe Konbata do
+  describe "ScormFile" do
+    before do
+      @local_file_path = "package/module/file.pdf"
+      @canvas_file_path = "module/file.pdf"
+      @scorm_file = ScormFile.new(
+        @file_path,
+        @canvas_file_path,
+      )
+    end
 
   describe "#_create_canvas_file" do
     it "returns a canvas_cc file" do
@@ -43,7 +48,10 @@ describe Konbata::ScormFile do
     end
 
     it "gives the canvas_cc file a file path" do
-      assert_equal(File.basename(@file_path), @scorm_file.canvas_file.file_path)
+      assert_equal(
+        @canvas_file_path,
+        @scorm_file.canvas_file.file_path,
+      )
     end
   end
 end
