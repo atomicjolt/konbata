@@ -31,7 +31,8 @@ module Konbata
     def canvas_course
       @canvas_course ||= begin
         canvas_course = CanvasCourse.create(
-          @package.course_title,
+          # @package.course_title,
+          File.basename(@package.filepath, ".zip"),
           course_code: @package.course_code,
           default_view: "modules",
         )
