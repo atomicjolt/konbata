@@ -59,14 +59,14 @@ module Konbata
     ##
     # Returns a hash of each <item> in the manifest.
     # Keys are the <item> identifier.
-    # Values are a hash of the title and identifierref.
+    # Values are a struct including title, directory, primary file and files.
     ##
     def items
       @items ||= begin
-        _default_organization.search(:item).each_with_object({}) do |item, items|
-          id = item.attr(:identifier)
-          id_ref = item.attr(:identifierref)
-          title = item.at(:title).text
+        _default_organization.search(:item).each_with_object({}) do |itm, items|
+          id = itm.attr(:identifier)
+          id_ref = itm.attr(:identifierref)
+          title = itm.at(:title).text
 
           items[id] = Struct.new(:title, :directory, :primary_file, :files).new(
             title,
@@ -115,7 +115,7 @@ module Konbata
     end
 
     ##
-    # Returns a flat list of all resource files in the SCORM package.
+    # Returns a flat list of all resource files in the SCORM package as strings.
     ##
     def _all_files
       @files = begin

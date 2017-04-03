@@ -19,9 +19,9 @@ module Konbata
   class ScormFile
     attr_reader :canvas_file
 
-    def initialize(file_path, canvas_file_path = nil)
-      @local_filepath = local_filepath # Location in local filesystem.
-      @canvas_file_path = canvas_file_path
+    def initialize(local_file_path, canvas_file_path = nil)
+      @local_file_path = local_file_path # Location in local filesystem.
+      @canvas_file_path = canvas_file_path # Location inside Canvas.
       @canvas_file = _create_canvas_file
     end
 
@@ -34,9 +34,10 @@ module Konbata
       canvas_file = CanvasCc::CanvasCC::Models::CanvasFile.new
 
       canvas_file.identifier = Konbata.create_random_hex
-      canvas_file.file_location = @local_filepath
+      canvas_file.file_location = @local_file_path
       canvas_file.hidden = false
-      canvas_file.file_path = @canvas_file_path || File.basename(@file_path)
+      canvas_file.file_path =
+        @canvas_file_path || File.basename(@local_file_path)
 
       canvas_file
     end

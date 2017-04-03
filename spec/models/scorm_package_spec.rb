@@ -18,9 +18,9 @@ require "konbata/models/scorm_package"
 
 describe Konbata::ScormPackage do
   before do
-      @scorm_package = Konbata::ScormPackage.new(
-        fixture_path("scorm_with_1_pdf.zip"),
-      )
+    @scorm_package = Konbata::ScormPackage.new(
+      fixture_path("scorm_with_1_pdf.zip"),
+    )
   end
 
   describe "#course_title" do
@@ -45,7 +45,7 @@ describe Konbata::ScormPackage do
     end
 
     it "returns the correct number of PDF files" do
-        assert_equal(1, @scorm_package.pdfs.size)
+      assert_equal(1, @scorm_package.pdfs.size)
     end
   end
 end
