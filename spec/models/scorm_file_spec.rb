@@ -47,12 +47,11 @@ describe Konbata do
       refute(@scorm_file.canvas_file.hidden)
     end
 
-      it "gives the canvas_cc file a file path" do
-        assert_equal(
-          @canvas_file_path,
-          @scorm_file.canvas_file.file_path,
-        )
-      end
+    it "gives the canvas_cc file a file path" do
+      assert_equal(
+        @canvas_file_path,
+        @scorm_file.canvas_file.file_path,
+      )
     end
   end
 end
