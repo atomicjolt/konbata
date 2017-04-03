@@ -20,7 +20,7 @@ module Konbata
     attr_reader :canvas_file
 
     def initialize(file_path, canvas_file_path = nil)
-      @file_path = file_path
+      @local_filepath = local_filepath # Location in local filesystem.
       @canvas_file_path = canvas_file_path
       @canvas_file = _create_canvas_file
     end
@@ -34,7 +34,7 @@ module Konbata
       canvas_file = CanvasCc::CanvasCC::Models::CanvasFile.new
 
       canvas_file.identifier = Konbata.create_random_hex
-      canvas_file.file_location = @file_path
+      canvas_file.file_location = @local_filepath
       canvas_file.hidden = false
       canvas_file.file_path = @canvas_file_path || File.basename(@file_path)
 

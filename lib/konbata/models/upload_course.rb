@@ -67,7 +67,7 @@ module Konbata
           name: course_title,
         },
       )
-      UploadCourse.new(course_resource)
+      Konbata::UploadCourse.new(course_resource)
     end
 
     ##
@@ -95,7 +95,7 @@ module Konbata
     # and upload the imscc file to be imported into the course
     ##
     def upload_content(filename, source_for_imscc)
-      client = UploadCourse.client
+      client = Konbata::UploadCourse.client
       name = File.basename(filename)
       # Create a migration for the course and get S3 upload authorization
       migration = client.
@@ -107,6 +107,7 @@ module Konbata
 
       puts "Uploading: #{name}"
       upload_to_s3(migration, filename)
+      change_tabs_visibility
       puts "Done uploading: #{name}"
 
       if File.exist?(source_for_imscc)
@@ -143,6 +144,59 @@ module Konbata
     end
 
     ##
+    # Requests all of the tabs available for a course. Sets hidden to `false`
+    # for any tab in the label whitelist; sets hidden to `true` for all others.
+    # `whitelisted_labels` should be an array of strings or regexps.
+    ##
+    def change_tabs_visibility(whitelisted_labels = nil)
+      whitelisted_labels ||= [/home/i, /assignments/i, /scorm/i]
+      whitelisted_labels.map! { |label| Regexp.new(label) }
+
+      tab_url_base = Konbata.configuration.canvas_url +
+        "/v1/courses/#{@course_resource.id}/tabs"
+
+      tabs = get_tabs(tab_url_base)
+
+      tabs.each do |tab|
+        # Settings and Home tabs can't be changed.
+        next if tab["id"] == "home" || tab["id"] == "settings"
+
+        visible = whitelisted_labels.any? { |label| tab["label"] =~ label }
+
+        change_tab_visibility(tab, visible, tab_url_base)
+      end
+    end
+
+    ##
+    # Gets the tabs from the given Canvas URL.
+    ##
+    def get_tabs(tab_url_base)
+      RestClient.get(
+        tab_url_base,
+        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+      ) do |response|
+        JSON.parse(response.body)
+      end
+    end
+
+    ##
+    # Issues a PUT request to Canvas using the given URL and sets the given
+    # tabs hidden attribute to true or false.
+    ##
+    def change_tab_visibility(tab, visible, tab_url_base)
+      RestClient.put(
+        tab_url_base + "/#{tab['id']}",
+        {
+          hidden: !visible,
+        },
+        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+      )
+    rescue RestClient::BadRequest => e
+      puts "WARNING: Failed to update tab #{tab['label']} for course " \
+      "#{@course_resource.id}. Error: #{e}"
+    end
+
+    ##
     # Assembles the launch url with the course_id
     ##
     def scorm_launch_url(package_id)
@@ -167,7 +221,7 @@ module Konbata
         assignment__points_possible__: POINTS_POSSIBLE,
       }
 
-      UploadCourse.client.create_assignment(
+      Konbata::UploadCourse.client.create_assignment(
         course_id,
         upload_response["title"],
         payload,
