@@ -16,42 +16,36 @@
 require_relative "helpers/spec_helper"
 require "konbata/configuration"
 
-describe Konbata do
-  describe "Configuration" do
-    before do
-      @config = Konbata::Configuration.new
-    end
+describe Konbata::Configuration do
+  before do
+    @config = Konbata::Configuration.new
+  end
 
-    it "should have a canvas_url attribute" do
-      assert_respond_to(@config, :canvas_url)
-    end
+  it "has a canvas_url attribute" do
+    assert_respond_to(@config, :canvas_url)
+  end
 
-    it "should have a canvas_token attribute" do
-      assert_respond_to(@config, :canvas_token)
-    end
+  it "has a canvas_token attribute" do
+    assert_respond_to(@config, :canvas_token)
+  end
 
-    it "should have a account_id attribute" do
-      assert_respond_to(@config, :account_id)
-    end
+  it "has a account_id attribute" do
+    assert_respond_to(@config, :account_id)
+  end
 
-    it "should have a scorm_url attribute" do
-      assert_respond_to(@config, :scorm_url)
-    end
+  it "has a scorm_url attribute" do
+    assert_respond_to(@config, :scorm_url)
+  end
 
-    it "should have a scorm_launch_url attribute" do
-      assert_respond_to(@config, :scorm_launch_url)
-    end
+  it "has a scorm_launch_url attribute" do
+    assert_respond_to(@config, :scorm_launch_url)
+  end
 
-    it "should have a scorm_shared_auth attribute" do
-      assert_respond_to(@config, :scorm_shared_auth)
-    end
+  it "has a scorm_shared_auth attribute" do
+    assert_respond_to(@config, :scorm_shared_auth)
+  end
 
-    it "should have a request_timeout attribute" do
-      assert_respond_to(@config, :request_timeout)
-    end
-
-    it "should have a libre_office_path attribute" do
-      assert_respond_to(@config, :libre_office_path)
-    end
+  it "has a request_timeout attribute" do
+    assert_respond_to(@config, :request_timeout)
   end
 end

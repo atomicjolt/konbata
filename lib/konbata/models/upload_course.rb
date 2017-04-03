@@ -67,7 +67,7 @@ module Konbata
           name: course_title,
         },
       )
-      UploadCourse.new(course_resource)
+      Konbata::UploadCourse.new(course_resource)
     end
 
     ##
@@ -95,7 +95,7 @@ module Konbata
     # and upload the imscc file to be imported into the course
     ##
     def upload_content(filename, source_for_imscc)
-      client = UploadCourse.client
+      client = Konbata::UploadCourse.client
       name = File.basename(filename)
       # Create a migration for the course and get S3 upload authorization
       migration = client.
@@ -221,7 +221,7 @@ module Konbata
         assignment__points_possible__: POINTS_POSSIBLE,
       }
 
-      UploadCourse.client.create_assignment(
+      Konbata::UploadCourse.client.create_assignment(
         course_id,
         upload_response["title"],
         payload,
