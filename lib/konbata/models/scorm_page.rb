@@ -49,7 +49,7 @@ module Konbata
         file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
       end
 
-      File.basename(pdf)
+      File.basename(pdf) if pdf
     end
 
     ##

@@ -40,8 +40,8 @@ describe Konbata::ScormPackage do
       assert_kind_of(Array, @scorm_package.pdfs)
     end
 
-    it "returns an array of ZipEntry objects" do
-      assert_kind_of(Zip::Entry, @scorm_package.pdfs.first)
+    it "returns an array of strings" do
+      assert_kind_of(String, @scorm_package.pdfs.first)
     end
 
     it "returns the correct number of PDF files" do

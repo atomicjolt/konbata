@@ -15,6 +15,7 @@
 
 require "zip"
 require "konbata/models/canvas_course"
+require "konbata/models/canvas_module"
 require "konbata/models/scorm_package"
 require "konbata/models/scorm_file"
 require "konbata/models/scorm_page"
