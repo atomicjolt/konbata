@@ -21,7 +21,7 @@ describe Konbata do
     before do
       @local_file_path = "package/module/file.pdf"
       @canvas_file_path = "module/file.pdf"
-      @scorm_file = Konbata::ScormFile.new(
+      @scorm_file = ScormFile.new(
         @file_path,
         @canvas_file_path,
       )
