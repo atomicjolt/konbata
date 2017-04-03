@@ -36,14 +36,10 @@ module Konbata
         default_view: "assignments",
       )
 
-<<<<<<< ckb-fix-extraction-bug
-      scorm_file = ScormFile.new(
+      scorm_file = Konbata::ScormFile.new(
         @package.filepath,
         File.basename(@package.filepath),
       )
-=======
-      scorm_file = Konbata::ScormFile.new(@package.filepath)
->>>>>>> master
 
       canvas_course.files << scorm_file.canvas_file
       _scorm_pdfs.each { |file| canvas_course.files << file.canvas_file }
@@ -63,11 +59,7 @@ module Konbata
         extract_to = File.join(temp_dir, entry.name)
         FileUtils.mkdir_p(File.dirname(extract_to))
         entry.extract(extract_to)
-<<<<<<< ckb-fix-extraction-bug
-        ScormFile.new(extract_to, entry.name)
-=======
-        Konbata::ScormFile.new(extract_to)
->>>>>>> master
+        Konbata::ScormFile.new(extract_to, entry.name)
       end
     end
   end
