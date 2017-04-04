@@ -22,24 +22,23 @@ module Konbata
     def initialize(local_file_path, canvas_file_path = nil)
       @local_file_path = local_file_path # Location in local filesystem.
       @canvas_file_path = canvas_file_path # Location inside Canvas.
-      @canvas_file = _create_canvas_file
     end
-
-    private
 
     ##
     # Creates and populates a canvas_cc CanvasFile.
     ##
-    def _create_canvas_file
-      canvas_file = CanvasCc::CanvasCC::Models::CanvasFile.new
+    def canvas_file
+      @canvas_file ||= begin
+        canvas_file = CanvasCc::CanvasCC::Models::CanvasFile.new
 
-      canvas_file.identifier = Konbata.create_random_hex
-      canvas_file.file_location = @local_file_path
-      canvas_file.hidden = false
-      canvas_file.file_path =
-        @canvas_file_path || File.basename(@local_file_path)
+        canvas_file.identifier = Konbata.create_random_hex
+        canvas_file.file_location = @local_file_path
+        canvas_file.hidden = false
+        canvas_file.file_path =
+          @canvas_file_path || File.basename(@local_file_path)
 
-      canvas_file
+        canvas_file
+      end
     end
   end
 end
