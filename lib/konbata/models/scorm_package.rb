@@ -39,7 +39,8 @@ module Konbata
     end
 
     ##
-    # Iterates through the SCORM package and returns any PDF files.
+    # Finds and returns any PDF files in the SCORM package as a nested array of
+    # PDF file names and extracted locations.
     ##
     def pdfs
       @pdfs ||= begin
@@ -53,7 +54,8 @@ module Konbata
     end
 
     ##
-    # Iterates through the SCORM package and returns any resource image files.
+    # Finds and returns the extracted location of any resource image files from
+    # the SCORM package.
     ##
     def resource_images
       @images ||= begin
