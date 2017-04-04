@@ -157,18 +157,18 @@ module Konbata
     end
 
     ##
-    # Extracts the list of files from the SCORM package zip and returns a list
-    # of their extracted locations.
+    # Extracts the list of files from the SCORM package zip and returns a nested
+    # list of the file name and extracted locations.
     ##
-    def _extract_files(zip_files)
+    def _extract_files(files)
       zip = Zip::File.new(@filepath)
 
-      zip_files.map do |file|
+      files.map do |file|
         FileUtils.mkdir_p(File.join(@temp_dir, File.dirname(file)))
         extract_to = File.join(@temp_dir, file)
         zip.find_entry(file).extract(extract_to)
 
-        extract_to
+        [file, extract_to]
       end
     end
   end
