@@ -16,51 +16,15 @@
 require "zip"
 require "konbata/models/canvas_course"
 require "konbata/models/canvas_module"
+require "konbata/models/canvas_module_item"
 require "konbata/models/scorm_package"
 require "konbata/models/scorm_file"
 require "konbata/models/scorm_page"
 
 module Konbata
   class ScormCourse
-    attr_reader :canvas_course
-
     def initialize(package_path)
       @package = ScormPackage.new(package_path)
-    end
-
-    def canvas_course
-      @canvas_course ||= begin
-        canvas_course = CanvasCourse.create(
-          # @package.course_title,
-          File.basename(@package.filepath, ".zip"),
-          course_code: @package.course_code,
-          default_view: "modules",
-        )
-
-        scorm_file = ScormFile.new(@package.filepath)
-
-        canvas_course.files << scorm_file.canvas_file
-
-        _pdfs_to_files.each { |file| canvas_course.files << file.canvas_file }
-        _images_to_files.each { |file| canvas_course.files << file.canvas_file }
-
-        canvas_module = CanvasModule.create(@package.course_title)
-
-        _items_to_pages.each do |page|
-          canvas_course.pages << page.canvas_page
-
-          module_item = CanvasModuleItem.create(
-            page.canvas_page.title,
-            page.canvas_page.identifier,
-          )
-
-          canvas_module.module_items << module_item
-        end
-
-        canvas_course.canvas_modules << canvas_module
-
-        canvas_course
-      end
     end
 
     def cleanup
@@ -69,29 +33,44 @@ module Konbata
 
     private
 
+    ##
+    # Creates a canvas_cc course for the SCORM package.
+    ##
+    def _create_canvas_course(default_view)
+      canvas_course = CanvasCourse.create(
+        # @package.course_title,
+        File.basename(@package.filepath, ".zip"),
+        course_code: @package.course_code,
+        default_view: default_view,
+      )
+
+      scorm_file = ScormFile.new(@package.filepath)
+      canvas_course.files << scorm_file.canvas_file
+
+      _pdfs_to_files.each { |file| canvas_course.files << file.canvas_file }
+      _images_to_files.each { |file| canvas_course.files << file.canvas_file }
+
+      canvas_course
+    end
+
+    ##
     # Creates a ScormFile object for each element in @package.pdfs and returns
     # them as an array.
+    ##
     def _pdfs_to_files
       @package.pdfs.map do |pdf|
         ScormFile.new(pdf)
       end
     end
 
-    # Creates a ScormFile object for each element in @package.images and returns
-    # them as an array.
+    ##
+    # Creates a ScormFile object for each element in @package.resource_images
+    # and returns them as an array.
+    ##
     def _images_to_files
-      @package.images.map do |image|
+      @package.resource_images.map do |image|
         ScormFile.new(image, File.join("images", File.basename(image)))
       end
-    end
-
-    # Creates a ScormPage object for each element in @package.items and returns
-    # them as an array.
-    def _items_to_pages
-      @package.items.map do |_, item_data|
-        next if item_data.title =~ /orientation/i
-        ScormPage.new(item_data)
-      end.compact
     end
   end
 end

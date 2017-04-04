@@ -43,16 +43,23 @@ module Konbata
     ##
     def pdfs
       @pdfs ||= begin
-        _all_files.select { |file| File.extname(file) =~ /\.pdf/i }
+        pdf_entries = Zip::File.new(@filepath).entries.select do |entry|
+          File.extname(entry.name) =~ /\.pdf/i
+        end
+
+        pdf_entries.map!(&:name)
+        _extract_files(pdf_entries)
       end
     end
 
     ##
-    # Iterates through the SCORM package and returns any image files.
+    # Iterates through the SCORM package and returns any resource image files.
     ##
-    def images
+    def resource_images
       @images ||= begin
-        _all_files.select { |file| File.extname(file) =~ /\.png|\.jpg|\.jpeg/i }
+        _all_resource_files.select do |file|
+          File.extname(file) =~ /\.png|\.jpg|\.jpeg/i
+        end
       end
     end
 
@@ -117,8 +124,8 @@ module Konbata
     ##
     # Returns a flat list of all resource files in the SCORM package as strings.
     ##
-    def _all_files
-      @files = begin
+    def _all_resource_files
+      @files ||= begin
         files = items.map do |_, item_data|
           item_data.files
         end.flatten
@@ -140,15 +147,13 @@ module Konbata
     # id_ref.
     ##
     def _item_files(id_ref)
-      @item_files = begin
-        resource = _manifest.at(:resources).at("resource[identifier=#{id_ref}]")
-        files = resource.search(:file)
+      resource = _manifest.at(:resources).at("resource[identifier=#{id_ref}]")
+      files = resource.search(:file)
 
-        filepaths = files.map { |file| file.attr(:href) }
-        _extract_files(filepaths)
+      filepaths = files.map { |file| file.attr(:href) }
+      _extract_files(filepaths)
 
-        filepaths
-      end
+      filepaths
     end
 
     ##
@@ -158,10 +163,12 @@ module Konbata
     def _extract_files(zip_files)
       zip = Zip::File.new(@filepath)
 
-      zip_files.each do |file|
+      zip_files.map do |file|
         FileUtils.mkdir_p(File.join(@temp_dir, File.dirname(file)))
         extract_to = File.join(@temp_dir, file)
         zip.find_entry(file).extract(extract_to)
+
+        extract_to
       end
     end
   end

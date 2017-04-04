@@ -57,12 +57,17 @@ module Konbata
 
     def self.install_tasks
       namespace :konbata do
-        desc "Find and process SCORM packages"
-        task :scorm do
-          Konbata.convert_scorm
+        desc "Find and process interactive SCORM packages."
+        task :interactive_scorm do
+          Konbata.convert_scorm(:interactive)
         end
 
-        desc "Upload .imscc files to canvas"
+        desc "Find and process non_interactive SCORM packages."
+        task :non_interactive_scorm do
+          Konbata.convert_scorm(:non_interactive)
+        end
+
+        desc "Upload .imscc files to canvas."
         task upload: CONVERTED_FILES.pathmap(
           "%{^#{OUTPUT_NAME}/,#{UPLOAD_DIR}/}X.txt",
         )

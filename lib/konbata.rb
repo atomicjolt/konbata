@@ -18,6 +18,8 @@ require "zip"
 
 require "konbata/configuration"
 require "konbata/models/scorm_course"
+require "konbata/models/interactive_scorm_course"
+require "konbata/models/non_interactive_scorm_course"
 require "konbata/models/upload_course"
 
 module Konbata
@@ -42,18 +44,22 @@ module Konbata
   # Iterates through every SCORM package in the sources directory and converts
   # them to a Canvas .imscc file.
   ##
-  def self.convert_scorm
+  def self.convert_scorm(type)
     FileUtils.mkdir_p(OUTPUT_DIR)
 
     scorm_package_paths = Dir.glob("#{INPUT_DIR}/*.zip")
+
     scorm_package_paths.each do |package_path|
-      # Formats path to not have any spaces as the Scorm upload can't handle it
+      # Formats path to not have any spaces as the SCORM upload can't handle it.
       formatted_path = package_path.gsub(/\s/, "_")
       if formatted_path != package_path
         File.rename(package_path, formatted_path)
         package_path = formatted_path
       end
-      course = Konbata::ScormCourse.new(package_path)
+
+      klass = "Konbata::#{type.to_s.camelize}ScormCourse".constantize
+      course = klass.new(package_path)
+
       create_imscc(course)
       course.cleanup
     end
