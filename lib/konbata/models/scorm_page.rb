@@ -53,7 +53,7 @@ module Konbata
     end
 
     ##
-    # Reads the content from the item's primary file.
+    # Reads and modifies the content from the item's primary file.
     ##
     def _page_html
       html = File.read(File.join(@item.directory, @item.primary_file))
