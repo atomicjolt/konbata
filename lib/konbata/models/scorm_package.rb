@@ -170,7 +170,7 @@ module Konbata
         extract_to = File.join(@temp_dir, file)
         zip.find_entry(file).extract(extract_to)
 
-        [file, extract_to]
+        [extract_to, file]
       end
     end
   end

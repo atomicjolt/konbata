@@ -58,7 +58,7 @@ module Konbata
     # them as an array.
     ##
     def _pdfs_to_files
-      @package.pdfs.map do |file_name, extracted_to|
+      @package.pdfs.map do |extracted_to, file_name|
         ScormFile.new(extracted_to, file_name)
       end
     end
