@@ -168,7 +168,10 @@ module Konbata
       files.map do |file|
         FileUtils.mkdir_p(File.join(@temp_dir, File.dirname(file)))
         extract_to = File.join(@temp_dir, file)
-        zip.find_entry(file).extract(extract_to)
+
+        unless File.exist?(extract_to)
+          zip.find_entry(file).extract(extract_to)
+        end
 
         [extract_to, file]
       end
