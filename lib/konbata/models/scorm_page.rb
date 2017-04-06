@@ -49,7 +49,7 @@ module Konbata
         file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
       end
 
-      File.basename(pdf) if pdf
+      pdf
     end
 
     ##
@@ -91,7 +91,7 @@ module Konbata
     def _embed_pdf(html)
       pdf_html = <<~HEREDOC
         <p style="text-align: left">
-          Download: <a href="#{_primary_pdf}">#{_primary_pdf}</a>
+          Download: <a href="#{_primary_pdf}">#{File.basename(_primary_pdf)}</a>
         </p>
       HEREDOC
 
