@@ -49,7 +49,7 @@ module Konbata
     # them as an array.
     def _items_to_pages
       @package.items.map do |_, item_data|
-        next if item_data.title =~ /orientation/i
+        next if item_data.title =~ /orientation/i # Orientation page is useless.
         ScormPage.new(item_data)
       end.compact
     end
