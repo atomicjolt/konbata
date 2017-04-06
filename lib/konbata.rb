@@ -78,12 +78,21 @@ module Konbata
   end
 
   ##
+  # Uploads all .imscc files in the canvas directory to Canvas.
+  ##
+  def self.upload_courses(type)
+    imscc_paths = Dir.glob("#{OUTPUT_DIR}/*.imscc")
+
+    imscc_paths.each { |imscc| Konbata.upload_course(imscc, type) }
+  end
+
+  ##
   # Uploads a course to Canvas.
   ##
-  def self.initialize_course(canvas_file_path)
-    metadata = Konbata::UploadCourse.metadata_from_file(canvas_file_path)
-    course = Konbata::UploadCourse.from_metadata(metadata)
+  def self.upload_course(imscc_file_path, type)
+    metadata = Konbata::UploadCourse.metadata_from_file(imscc_file_path)
+    course = Konbata::UploadCourse.from_metadata(metadata, type)
     source_for_imscc = "#{INPUT_DIR}/#{metadata[:title]}.zip"
-    course.upload_content(canvas_file_path, source_for_imscc)
+    course.upload_content(imscc_file_path, source_for_imscc)
   end
 end

@@ -17,14 +17,6 @@ require "rake"
 require "rake/clean"
 require "konbata"
 
-UPLOAD_DIR = "uploaded".freeze
-
-## Don't change these, these are just getting the last
-## of the folder name for the script below to use
-OUTPUT_NAME = Konbata::OUTPUT_DIR.split("/").last
-UPLOAD_NAME = UPLOAD_DIR.split("/").last
-CONVERTED_FILES = Rake::FileList.new("#{Konbata::OUTPUT_DIR}/*.imscc")
-
 ##
 # Creates rake tasks that can be ran from the gem.
 #
@@ -34,21 +26,13 @@ CONVERTED_FILES = Rake::FileList.new("#{Konbata::OUTPUT_DIR}/*.imscc")
 #   Konbata::Tasks.install_tasks
 ##
 
-def source_for_upload_log(upload_log)
-  CONVERTED_FILES.detect do |f|
-    path = upload_log.pathmap("%{^#{UPLOAD_DIR}/,#{Konbata::OUTPUT_DIR}/}X")
-    f.ext("") == path
-  end
-end
+def validate_type_arg(type)
+  return if type == "interactive" || type == "non_interactive"
 
-def make_directories(name, upload_dir)
-  mkdir_p name.pathmap("%d")
-  mkdir_p upload_dir
-end
+  puts "ERROR: Must pass 'interactive' or 'non_interactive' as an argument to" \
+  " the task."
 
-def log_file(name)
-  sh "touch #{name}"
-  sh "date >> #{name}"
+  exit
 end
 
 module Konbata
@@ -57,27 +41,22 @@ module Konbata
 
     def self.install_tasks
       namespace :konbata do
-        desc "Find and process interactive SCORM packages."
-        task :interactive_scorm do
-          Konbata.convert_scorm(:interactive)
+        desc "Find and process SCORM packages, accepts 'interactive' or " \
+        "'non_interactive' as an argument."
+        task :scorm, [:type] do |_, args|
+          validate_type_arg(args[:type])
+          type = args[:type].to_sym
+
+          Konbata.convert_scorm(type)
         end
 
-        desc "Find and process non_interactive SCORM packages."
-        task :non_interactive_scorm do
-          Konbata.convert_scorm(:non_interactive)
-        end
+        desc "Upload .imscc files to Canvas, accepts 'interactive' or " \
+        "'non_interactive' as an argument."
+        task :upload, [:type] do |_, args|
+          validate_type_arg(args[:type])
+          type = args[:type].to_sym
 
-        desc "Upload .imscc files to canvas."
-        task upload: CONVERTED_FILES.pathmap(
-          "%{^#{OUTPUT_NAME}/,#{UPLOAD_DIR}/}X.txt",
-        )
-
-        directory UPLOAD_NAME
-
-        rule ".txt" => [->(f) { source_for_upload_log(f) }, UPLOAD_NAME] do |t|
-          make_directories(t.name, UPLOAD_DIR)
-          Konbata.initialize_course(t.source)
-          log_file(t.name)
+          Konbata.upload_courses(type)
         end
 
         desc "Destroy output folder."
