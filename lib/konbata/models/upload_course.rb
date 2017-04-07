@@ -154,7 +154,7 @@ module Konbata
     # `whitelisted_labels` should be an array of strings or regexps.
     ##
     def change_tabs_visibility(whitelisted_labels = nil)
-      whitelisted_labels ||= default_whitelisted_labels
+      whitelisted_labels ||= _default_whitelisted_labels
       whitelisted_labels.map! { |label| Regexp.new(label) }
 
       tab_url_base = Konbata.configuration.canvas_url +
@@ -170,21 +170,6 @@ module Konbata
 
         change_tab_visibility(tab, visible, tab_url_base)
       end
-    end
-
-    ##
-    # Returns the default whitelisted labels based on course type.
-    ##
-    def default_whitelisted_labels
-      labels = [/home/i, /scorm/i]
-
-      if @type == :interactive
-        labels << /assignments/i
-      elsif @type == :non_interactive
-        labels << /modules/i
-      end
-
-      labels
     end
 
     ##
@@ -246,6 +231,23 @@ module Konbata
         upload_response["title"],
         payload,
       )
+    end
+
+    private
+
+    ##
+    # Returns the default whitelisted labels based on course type.
+    ##
+    def _default_whitelisted_labels
+      labels = [/home/i, /scorm/i]
+
+      if @type == :interactive
+        labels << /assignments/i
+      elsif @type == :non_interactive
+        labels << /modules/i
+      end
+
+      labels
     end
   end
 end
