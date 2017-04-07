@@ -17,7 +17,7 @@ require_relative "../helpers/spec_helper"
 require "konbata/models/canvas_module"
 
 describe Konbata::CanvasModule do
-  describe "self.create" do
+  describe ".create" do
     before do
       @volume = "3"
       @module = Konbata::CanvasModule.create("Volume #{@volume}")
