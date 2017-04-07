@@ -19,7 +19,7 @@ require "konbata/models/interactive_scorm_course"
 describe Konbata::InteractiveScormCourse do
   describe "#canvas_course" do
     before do
-      scorm_zip = fixture_path("scorm_with_no_pdfs.zip")
+      scorm_zip = fixture_path("interactive_scorm.zip")
       @scorm_course = Konbata::InteractiveScormCourse.new(scorm_zip)
     end
 
