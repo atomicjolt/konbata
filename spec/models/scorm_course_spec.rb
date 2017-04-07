@@ -17,22 +17,38 @@ require_relative "../helpers/spec_helper"
 require "konbata/models/scorm_course"
 
 describe Konbata::ScormCourse do
-  describe "#_create_canvas_course" do
-    before do
-      @scorm_zip = fixture_path("scorm_with_no_pdfs.zip")
-      @scorm_course = Konbata::InteractiveScormCourse.new(@scorm_zip)
-    end
+  before do
+    @scorm_zip = fixture_path("interactive_scorm.zip")
+    @scorm_course = Konbata::InteractiveScormCourse.new(@scorm_zip)
+  end
 
-    it "returns a canvas_course" do
+  describe "#_create_canvas_course" do
+    it "returns a Canvas course" do
       refute_nil(@scorm_course.canvas_course)
     end
 
-    it "adds the SCORM file to the canvas_course" do
+    it "adds the SCORM file to the Canvas course" do
       scorm_file = @scorm_course.canvas_course.files.detect do |file|
         file.file_location = @scorm_zip
       end
 
       assert(scorm_file)
+    end
+
+    it "adds PDF files to the Canvas course" do
+      pdf_files = @scorm_course.canvas_course.files.select do |file|
+        File.extname(file.file_path) == ".pdf"
+      end
+
+      assert_equal(2, pdf_files.count)
+    end
+
+    it "adds image files to the Canvas course" do
+      image_files = @scorm_course.canvas_course.files.select do |file|
+        File.extname(file.file_path) =~ /\.png|\.jpg|\.jpeg/
+      end
+
+      assert_equal(3, image_files.count)
     end
   end
 end
