@@ -36,6 +36,7 @@ describe Konbata::UploadCourse do
     it "returns the correct launch URL" do
       upload_course = Konbata::UploadCourse.new(
         Konbata::CanvasCourse.create("Test"),
+        :interactive,
       )
       package_id = "123"
 
