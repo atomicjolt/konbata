@@ -19,29 +19,76 @@ require "konbata/models/scorm_package"
 describe Konbata::ScormPackage do
   before do
     @scorm_package = Konbata::ScormPackage.new(
-      fixture_path("scorm_with_1_pdf.zip"),
+      fixture_path("non_interactive_scorm.zip"),
     )
   end
 
   describe "#course_title" do
     it "returns the course title from the manifest" do
-      assert_equal("123 Sample Course", @scorm_package.course_title)
+      assert_equal("Sample Course", @scorm_package.course_title)
     end
   end
 
   describe "#course_code" do
     it "returns the course code from the manifest" do
-      assert_equal("123_Sample_Course", @scorm_package.course_code)
+      assert_equal("Sample_Course", @scorm_package.course_code)
     end
   end
 
   describe "#pdfs" do
-    it "returns an array of the PDF files in the SCORM package" do
+    it "returns a nested array of the PDF files in the SCORM package" do
       assert_kind_of(Array, @scorm_package.pdfs)
+      assert_kind_of(Array, @scorm_package.pdfs.first)
     end
 
     it "returns the correct number of PDF files" do
-      assert_equal(1, @scorm_package.pdfs.size)
+      assert_equal(2, @scorm_package.pdfs.size)
+    end
+
+    it "returns the name of the PDF file" do
+      assert_equal("Volume1/volume1.pdf", @scorm_package.pdfs.first[1])
+    end
+  end
+
+  describe "#resource_images" do
+    it "returns an array of the image files in the SCORM package" do
+      assert_kind_of(Array, @scorm_package.resource_images)
+    end
+
+    it "returns the correct number of images" do
+      assert_equal(4, @scorm_package.resource_images.size)
+    end
+  end
+
+  describe "#items" do
+    it "returns a hash of all the items in the manifest" do
+      assert_kind_of(Hash, @scorm_package.items)
+    end
+
+    it "adds a Struct to the hash for each item" do
+      assert_kind_of(Struct, @scorm_package.items.first[1])
+    end
+
+    it "gives the item Structs a title" do
+      assert_equal("Orientation", @scorm_package.items.first[1].title)
+    end
+
+    it "gives the item Structs a directory" do
+      assert(@scorm_package.items.first[1].directory)
+    end
+
+    it "gives the item Structs a primary file" do
+      assert_equal(
+        "Orientation/orientation.html",
+        @scorm_package.items.first[1].primary_file,
+      )
+    end
+
+    it "gives the item Structs a list of files" do
+      assert_equal(
+        ["Orientation/orientation.html"],
+        @scorm_package.items.first[1].files,
+      )
     end
   end
 end
