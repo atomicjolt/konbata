@@ -19,10 +19,10 @@ require "konbata/models/scorm_page"
 describe Konbata::ScormPage do
   before do
     item = Struct.new(:title, :directory, :primary_file, :files).new(
-    "Test Page",
-    fixture_path("scorm_page_files"),
-    "Volume1/primary_file.html",
-    ["Volume1/primary_pdf.pdf"],
+      "Test Page",
+      fixture_path("scorm_page_files"),
+      "Volume1/primary_file.html",
+      ["Volume1/primary_pdf.pdf"],
     )
 
     @page = Konbata::ScormPage.new(item).canvas_page
