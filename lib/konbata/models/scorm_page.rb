@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require "canvas_cc"
+require "konbata/models/canvas_page"
 
 module Konbata
   class ScormPage
@@ -27,15 +27,7 @@ module Konbata
     # Creates and populates a canvas_cc page.
     ##
     def canvas_page
-      @canvas_page ||= begin
-        page = CanvasCc::CanvasCC::Models::Page.new
-        page.identifier = Konbata.create_random_hex
-        page.workflow_state = "active"
-        page.page_name = @item.title
-        page.body = _page_html
-
-        page
-      end
+      @canvas_page ||= Konbata::CanvasPage.create(@item.title, _page_html)
     end
 
     private
