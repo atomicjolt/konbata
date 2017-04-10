@@ -17,8 +17,6 @@ require "konbata/models/canvas_file"
 
 module Konbata
   class ScormFile
-    attr_reader :canvas_file
-
     def initialize(local_file_path, canvas_file_path = nil)
       @local_file_path = local_file_path # Location in local filesystem.
       @canvas_file_path = canvas_file_path # Location inside Canvas.

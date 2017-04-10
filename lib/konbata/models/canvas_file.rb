@@ -20,7 +20,7 @@ module Konbata
     ##
     # Creates and returns a canvas_cc file object.
     ##
-    def self.create(local_file_path, canvas_file_path)
+    def self.create(local_file_path, canvas_file_path = nil)
       canvas_file = CanvasCc::CanvasCC::Models::CanvasFile.new
 
       canvas_file.identifier = Konbata.create_random_hex

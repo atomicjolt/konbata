@@ -17,14 +17,12 @@ require "konbata/models/canvas_page"
 
 module Konbata
   class ScormPage
-    attr_reader :canvas_page
-
     def initialize(item)
       @item = item
     end
 
     ##
-    # Creates and populates a canvas_cc page.
+    # Creates a canvas_cc page for @item.
     ##
     def canvas_page
       @canvas_page ||= Konbata::CanvasPage.create(@item.title, _page_html)
@@ -37,15 +35,14 @@ module Konbata
     # The primary PDF is the PDF file found at the top level of @item's folder.
     ##
     def _primary_pdf
-      pdf = @item.files.detect do |file|
+      @item.files.detect do |file|
         file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
       end
-
-      pdf
     end
 
     ##
-    # Reads and modifies the content from the item's primary file.
+    # Reads the contents of the item's primary file and returns a cleaned up
+    # version.
     ##
     def _page_html
       html = File.read(File.join(@item.directory, @item.primary_file))
@@ -78,7 +75,8 @@ module Konbata
     end
 
     ##
-    # Removes the iframe and adds the HTML to show the PDF for @item.
+    # Removes the iframe and replaces it with the HTML to show the PDF for
+    # @item.
     ##
     def _embed_pdf(html)
       pdf_html = <<~HEREDOC

@@ -18,7 +18,7 @@ require "canvas_cc"
 module Konbata
   class CanvasPage
     ##
-    # Creates and returns a canvas_cc file object.
+    # Creates and returns a canvas_cc page object.
     ##
     def self.create(title, body)
       page = CanvasCc::CanvasCC::Models::Page.new

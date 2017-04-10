@@ -17,12 +17,12 @@ require_relative "../helpers/spec_helper"
 require "konbata/models/scorm_course"
 
 describe Konbata::ScormCourse do
-  before do
-    @scorm_zip = fixture_path("interactive_scorm.zip")
-    @scorm_course = Konbata::InteractiveScormCourse.new(@scorm_zip)
-  end
-
   describe "#_create_canvas_course" do
+    before do
+      @scorm_zip = fixture_path("interactive_scorm.zip")
+      @scorm_course = Konbata::InteractiveScormCourse.new(@scorm_zip)
+    end
+
     it "returns a Canvas course" do
       refute_nil(@scorm_course.canvas_course)
     end
