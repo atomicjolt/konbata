@@ -13,32 +13,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require "canvas_cc"
+require "konbata/models/canvas_file"
 
 module Konbata
   class ScormFile
-    attr_reader :canvas_file
-
-    def initialize(local_filepath, canvas_filepath)
-      @local_filepath = local_filepath # Location in local filesystem.
-      @canvas_filepath = canvas_filepath # Location in Canvas Files section.
-      @canvas_file = _create_canvas_file
+    def initialize(local_file_path, canvas_file_path = nil)
+      @local_file_path = local_file_path # Location in local filesystem.
+      @canvas_file_path = canvas_file_path # Location inside Canvas.
     end
-
-    private
 
     ##
     # Creates and populates a canvas_cc CanvasFile.
     ##
-    def _create_canvas_file
-      canvas_file = CanvasCc::CanvasCC::Models::CanvasFile.new
-
-      canvas_file.identifier = Konbata.create_random_hex
-      canvas_file.file_location = @local_filepath
-      canvas_file.hidden = false
-      canvas_file.file_path = @canvas_filepath
-
-      canvas_file
+    def canvas_file
+      @canvas_file ||= begin
+        Konbata::CanvasFile.create(
+          @local_file_path,
+          @canvas_file_path,
+        )
+      end
     end
   end
 end

@@ -14,28 +14,34 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 require_relative "../helpers/spec_helper"
-require "konbata/models/canvas_module"
+require "konbata/models/canvas_page"
 
-describe Konbata::CanvasModule do
+describe Konbata::CanvasPage do
   describe ".create" do
     before do
-      @module = Konbata::CanvasModule.create("Module")
+      @title = "Test Page"
+      @body = "<html><p>This is some test HTML.</p></html>"
+      @canvas_page = Konbata::CanvasPage.create(@title, @body)
     end
 
-    it "returns a canvas_cc module" do
-      assert(@module.is_a?(CanvasCc::CanvasCC::Models::CanvasModule))
+    it "returns a canvas_cc page" do
+      assert(@canvas_page.is_a?(CanvasCc::CanvasCC::Models::Page))
     end
 
-    it "gives the module an identifier" do
-      refute_nil(@module.identifier)
+    it "gives the page an identifier" do
+      assert(@canvas_page.identifier)
     end
 
-    it "gives the module a title" do
-      assert_equal("Module", @module.title)
+    it "gives the page a workflow state of active" do
+      assert_equal("active", @canvas_page.workflow_state)
     end
 
-    it "gives the module a workflow state of 'active'" do
-      assert_equal("active", @module.workflow_state)
+    it "gives the page a title" do
+      assert_equal(@title, @canvas_page.title)
+    end
+
+    it "gives the page a body" do
+      assert_equal(@body, @canvas_page.body)
     end
   end
 end

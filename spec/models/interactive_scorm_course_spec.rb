@@ -13,20 +13,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require "canvas_cc"
+require_relative "../helpers/spec_helper"
+require "konbata/models/interactive_scorm_course"
 
-module Konbata
-  ##
-  # Creates and returns a canvas_cc module object.
-  ##
-  class CanvasModule
-    def self.create(title)
-      canvas_module = CanvasCc::CanvasCC::Models::CanvasModule.new
-      canvas_module.identifier = Konbata.create_random_hex
-      canvas_module.title = title
-      canvas_module.workflow_state = "active"
+describe Konbata::InteractiveScormCourse do
+  describe "#canvas_course" do
+    before do
+      scorm_zip = fixture_path("interactive_scorm.zip")
+      @scorm_course = Konbata::InteractiveScormCourse.new(scorm_zip)
+    end
 
-      canvas_module
+    it "sets default view to 'assignments'" do
+      assert_equal("assignments", @scorm_course.canvas_course.default_view)
     end
   end
 end

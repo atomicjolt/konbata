@@ -17,7 +17,7 @@ require_relative "../helpers/spec_helper"
 require "konbata/models/canvas_course"
 
 describe Konbata::CanvasCourse do
-  describe "#create" do
+  describe ".create" do
     describe "without opts" do
       before do
         @title = "Test Course"

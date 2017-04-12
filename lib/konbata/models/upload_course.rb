@@ -23,9 +23,11 @@ module Konbata
     attr_reader :canvas_course
 
     POINTS_POSSIBLE = 100
+    UPLOAD_LOG_DIR = "uploaded".freeze
 
-    def initialize(course_resource)
+    def initialize(course_resource, type)
       @course_resource = course_resource
+      @type = type
     end
 
     ##
@@ -57,7 +59,7 @@ module Konbata
     ##
     # Find or Create a new CanvasCourse instance from the given metadata
     ##
-    def self.from_metadata(metadata)
+    def self.from_metadata(metadata, type)
       course_title = metadata[:title]
       # TODO: Actually use the course_code somewhere
       # course_code = metadata[:course_code]
@@ -67,7 +69,7 @@ module Konbata
           name: course_title,
         },
       )
-      Konbata::UploadCourse.new(course_resource)
+      Konbata::UploadCourse.new(course_resource, type)
     end
 
     ##
@@ -108,12 +110,17 @@ module Konbata
       puts "Uploading: #{name}"
       upload_to_s3(migration, filename)
       change_tabs_visibility
+      _log_upload
       puts "Done uploading: #{name}"
 
       if File.exist?(source_for_imscc)
         puts "Creating Scorm: #{name}"
         response = upload_scorm_package(source_for_imscc, @course_resource.id)
-        create_scorm_assignment_external(response, @course_resource.id)
+
+        if @type == :interactive
+          create_scorm_assignment_external(response, @course_resource.id)
+        end
+
         puts "Done creating scorm: #{name}"
       end
     end
@@ -149,7 +156,7 @@ module Konbata
     # `whitelisted_labels` should be an array of strings or regexps.
     ##
     def change_tabs_visibility(whitelisted_labels = nil)
-      whitelisted_labels ||= [/home/i, /assignments/i, /scorm/i]
+      whitelisted_labels ||= _default_whitelisted_labels
       whitelisted_labels.map! { |label| Regexp.new(label) }
 
       tab_url_base = Konbata.configuration.canvas_url +
@@ -226,6 +233,34 @@ module Konbata
         upload_response["title"],
         payload,
       )
+    end
+
+    private
+
+    ##
+    # Returns the default whitelisted labels based on course type.
+    ##
+    def _default_whitelisted_labels
+      labels = [/home/i, /scorm/i]
+
+      if @type == :interactive
+        labels << /assignments/i
+      elsif @type == :non_interactive
+        labels << /modules/i
+      end
+
+      labels
+    end
+
+    ##
+    # Logs the upload by adding the current datetime to a log file named after
+    # the course.
+    ##
+    def _log_upload
+      FileUtils.mkdir_p(UPLOAD_LOG_DIR)
+
+      log_file = File.join(UPLOAD_LOG_DIR, "#{@course_resource.name}.txt")
+      File.open(log_file, "a") { |file| file << "#{Time.now}\n" }
     end
   end
 end

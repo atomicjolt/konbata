@@ -15,51 +15,60 @@
 
 require "zip"
 require "konbata/models/canvas_course"
+require "konbata/models/canvas_module"
+require "konbata/models/canvas_module_item"
 require "konbata/models/scorm_package"
 require "konbata/models/scorm_file"
+require "konbata/models/scorm_page"
 
 module Konbata
   class ScormCourse
-    attr_reader :canvas_course
-
     def initialize(package_path)
       @package = Konbata::ScormPackage.new(package_path)
-      @canvas_course = _create_canvas_course
+    end
+
+    def cleanup
+      @package.cleanup
     end
 
     private
 
-    def _create_canvas_course
+    ##
+    # Creates a canvas_cc course for the SCORM package.
+    ##
+    def _create_canvas_course(default_view)
       canvas_course = Konbata::CanvasCourse.create(
         File.basename(@package.filepath, ".zip"),
         course_code: @package.course_code,
-        default_view: "assignments",
+        default_view: default_view,
       )
 
-      scorm_file = Konbata::ScormFile.new(
-        @package.filepath,
-        File.basename(@package.filepath),
-      )
-
+      scorm_file = Konbata::ScormFile.new(@package.filepath)
       canvas_course.files << scorm_file.canvas_file
-      _scorm_pdfs.each { |file| canvas_course.files << file.canvas_file }
+
+      _pdfs_to_files.each { |file| canvas_course.files << file.canvas_file }
+      _images_to_files.each { |file| canvas_course.files << file.canvas_file }
 
       canvas_course
     end
 
     ##
-    # Iterates through the SCORM package and detects any PDF files. A ScormFile
-    # object will be generated for each PDF found, and an array of ScormFile
-    # objects is returned.
+    # Creates a ScormFile object for each element in @package.pdfs and returns
+    # them as an array.
     ##
-    def _scorm_pdfs
-      temp_dir = Dir.mktmpdir
+    def _pdfs_to_files
+      @package.pdfs.map do |extracted_to, file_name|
+        Konbata::ScormFile.new(extracted_to, file_name)
+      end
+    end
 
-      @package.pdfs.map do |entry|
-        extract_to = File.join(temp_dir, entry.name)
-        FileUtils.mkdir_p(File.dirname(extract_to))
-        entry.extract(extract_to)
-        Konbata::ScormFile.new(extract_to, entry.name)
+    ##
+    # Creates a ScormFile object for each element in @package.resource_images
+    # and returns them as an array.
+    ##
+    def _images_to_files
+      @package.resource_images.map do |image|
+        Konbata::ScormFile.new(image, File.join("images", File.basename(image)))
       end
     end
   end

@@ -21,6 +21,7 @@ module Konbata
 
     def initialize(filepath)
       @filepath = filepath
+      @temp_dir = Dir.mktmpdir
     end
 
     ##
@@ -38,14 +39,59 @@ module Konbata
     end
 
     ##
-    # Iterates through the SCORM package and returns any PDF files.
+    # Finds and returns any PDF files in the SCORM package as a nested array of
+    # PDF file names and extracted locations.
     ##
     def pdfs
       @pdfs ||= begin
-        Zip::File.new(@filepath).entries.select do |entry|
+        pdf_entries = Zip::File.new(@filepath).entries.select do |entry|
           File.extname(entry.name) =~ /\.pdf/i
         end
+
+        pdf_entries.map!(&:name)
+        _extract_files(pdf_entries)
       end
+    end
+
+    ##
+    # Finds and returns the extracted location of any resource image files from
+    # the SCORM package.
+    ##
+    def resource_images
+      @images ||= begin
+        _all_resource_files.select do |file|
+          File.extname(file) =~ /\.png|\.jpg|\.jpeg/i
+        end
+      end
+    end
+
+    ##
+    # Returns a hash of each <item> in the manifest.
+    # Keys are the <item> identifier.
+    # Values are a struct including title, directory, primary file and files.
+    ##
+    def items
+      @items ||= begin
+        _default_organization.search(:item).each_with_object({}) do |itm, items|
+          id = itm.attr(:identifier)
+          id_ref = itm.attr(:identifierref)
+          title = itm.at(:title).text
+
+          items[id] = Struct.new(:title, :directory, :primary_file, :files).new(
+            title,
+            @temp_dir,
+            _item_primary_file(id_ref),
+            _item_files(id_ref),
+          )
+        end
+      end
+    end
+
+    ##
+    # Removes the @temp_dir.
+    ##
+    def cleanup
+      FileUtils.remove_entry_secure(@temp_dir)
     end
 
     private
@@ -71,8 +117,64 @@ module Konbata
     # Returns the default organization from the manifest as a Nokogiri object.
     ##
     def _default_organization
-      default_organization_id = _manifest.at(:organizations).attr(:default)
-      _manifest.at("organization[identifier='#{default_organization_id}']")
+      @default_organization = begin
+        default_organization_id = _manifest.at(:organizations).attr(:default)
+        _manifest.at("organization[identifier='#{default_organization_id}']")
+      end
+    end
+
+    ##
+    # Returns a flat list of all resource files in the SCORM package as strings.
+    ##
+    def _all_resource_files
+      @files ||= begin
+        files = items.map do |_, item_data|
+          item_data.files
+        end.flatten
+
+        files.map { |file| File.join(@temp_dir, file) }
+      end
+    end
+
+    ##
+    # Returns the path to the primary file as given in the manifest at
+    # resource[href].
+    ##
+    def _item_primary_file(id_ref)
+      _manifest.at(:resources).at("resource[identifier=#{id_ref}]").attr(:href)
+    end
+
+    ##
+    # Returns a list of extracted files associated with the resource matching
+    # id_ref.
+    ##
+    def _item_files(id_ref)
+      resource = _manifest.at(:resources).at("resource[identifier=#{id_ref}]")
+      files = resource.search(:file)
+
+      filepaths = files.map { |file| file.attr(:href) }
+      _extract_files(filepaths)
+
+      filepaths
+    end
+
+    ##
+    # Extracts the list of files from the SCORM package zip and returns a nested
+    # list of the file name and extracted locations.
+    ##
+    def _extract_files(files)
+      zip = Zip::File.new(@filepath)
+
+      files.map do |file|
+        FileUtils.mkdir_p(File.join(@temp_dir, File.dirname(file)))
+        extract_to = File.join(@temp_dir, file)
+
+        unless File.exist?(extract_to)
+          zip.find_entry(file).extract(extract_to)
+        end
+
+        [extract_to, file]
+      end
     end
   end
 end

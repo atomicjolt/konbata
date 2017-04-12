@@ -17,7 +17,7 @@ require_relative "../helpers/spec_helper"
 require "konbata/models/canvas_module_item"
 
 describe Konbata::CanvasModuleItem do
-  describe "self.create" do
+  describe ".create" do
     before do
       @title = "Test Module Item"
       @identifierref = Konbata.create_random_hex

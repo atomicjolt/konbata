@@ -45,32 +45,59 @@ Create a `konbata.yml` file and add credentials for uploading to Canvas:
 
 Any `.zip` files placed at the top level of the `sources` directory will be processed as SCORM packages.
 
-Only basic support for SCORM packages is available as of right now. For each SCORM zip found, Konbata will do the following:
-  - Create a skeleton Canvas course and create an .imscc file for that course.
-  - Add the original SCORM package to the course's files.
-  - Add any PDF files found in the SCORM package to the course's files.
-  - When running the `upload` command, make the appropriate calls to upload the SCORM package to the SCORM manager designated in the `konbata.yml` file.
-  - Hide all of the course's tabs except for "Home" and "Assignments".
-  - Set the default view to "Assignments".
+Konbata is designed to process two types of SCORM packages: interactive and non-interactive.
+
+Below is a breakdown of how each type is handled.
+
+_For Both Package Types_
+- During .imscc Creation
+  - Create a Canvas course.
+  - Add the original SCORM package to the Files section in Canvas.
+  - Add any PDF files from the SCORM package to the Files section.
+  - Add any images from the SCORM package to Files section.
+- During Upload
+  - For students, hide all tabs except "Home" (and "Assignments" or "Modules")
+  - Add the SCORM package to the SCORM player.
+
+_For Interactive Packages_
+- During .imscc Creation
+  - Set default view to “Assignments”.
+- During Upload
+  - Create an assignment for the SCORM package.
+  - For students, show the “Assignments” tab.
+
+_For Non-Interactive Packages_
+- During .imscc Creation
+  - Create a Canvas page for each primary PDF file.
+  - Add all Canvas pages to a module.
+  - Set the default view to “Modules”
+- During Upload
+  - For students, show “Modules” tab.
 
 #### Running
 
 To run Konbata, use the following Rake tasks:
 
 Convert files:
-```sh
-rake konbata:scorm # For processing SCORM packages.
-```
-
-Delete the entire output folder:
-```sh
-rake konbata:clean
+```bash
+rake konbata:scorm[interactive]
+# or
+rake konbata:scorm[non_interactive]
 ```
 
 Upload to Canvas:
-```sh
-rake konbata:upload
+```bash
+rake konbata:upload[interactive]
+# or
+rake konbata:upload[non_interactive]
 ```
+
+Delete the entire output folder:
+```bash
+rake konbata:clean
+```
+
+Note: If you are using Zsh as your shell, you will probably need to escape brackets when running these Rake tasks. e.g. `rake konbata:upload\[interactive\]` or `rake 'konbata:upload[interactive]'`. Check [this article](https://robots.thoughtbot.com/how-to-use-arguments-in-a-rake-task) for more details.
 
 ## License
 

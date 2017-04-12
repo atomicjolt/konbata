@@ -16,17 +16,19 @@
 require "canvas_cc"
 
 module Konbata
-  ##
-  # Creates and returns a canvas_cc module object.
-  ##
-  class CanvasModule
-    def self.create(title)
-      canvas_module = CanvasCc::CanvasCC::Models::CanvasModule.new
-      canvas_module.identifier = Konbata.create_random_hex
-      canvas_module.title = title
-      canvas_module.workflow_state = "active"
+  class CanvasPage
+    ##
+    # Creates and returns a canvas_cc page object.
+    ##
+    def self.create(title, body)
+      page = CanvasCc::CanvasCC::Models::Page.new
 
-      canvas_module
+      page.identifier = Konbata.create_random_hex
+      page.workflow_state = "active"
+      page.page_name = title
+      page.body = body
+
+      page
     end
   end
 end

@@ -16,17 +16,19 @@
 require "canvas_cc"
 
 module Konbata
-  ##
-  # Creates and returns a canvas_cc module object.
-  ##
-  class CanvasModule
-    def self.create(title)
-      canvas_module = CanvasCc::CanvasCC::Models::CanvasModule.new
-      canvas_module.identifier = Konbata.create_random_hex
-      canvas_module.title = title
-      canvas_module.workflow_state = "active"
+  class CanvasFile
+    ##
+    # Creates and returns a canvas_cc file object.
+    ##
+    def self.create(local_file_path, canvas_file_path = nil)
+      canvas_file = CanvasCc::CanvasCC::Models::CanvasFile.new
 
-      canvas_module
+      canvas_file.identifier = Konbata.create_random_hex
+      canvas_file.hidden = false
+      canvas_file.file_location = local_file_path
+      canvas_file.file_path = canvas_file_path || File.basename(local_file_path)
+
+      canvas_file
     end
   end
 end

@@ -18,6 +18,8 @@ require "zip"
 
 require "konbata/configuration"
 require "konbata/models/scorm_course"
+require "konbata/models/interactive_scorm_course"
+require "konbata/models/non_interactive_scorm_course"
 require "konbata/models/upload_course"
 
 module Konbata
@@ -26,7 +28,7 @@ module Konbata
   FILE_BASE = "$IMS_CC_FILEBASE$".freeze
 
   def self.configuration
-    @configuration ||= Configuration.new
+    @configuration ||= Konbata::Configuration.new
   end
 
   ##
@@ -42,19 +44,24 @@ module Konbata
   # Iterates through every SCORM package in the sources directory and converts
   # them to a Canvas .imscc file.
   ##
-  def self.convert_scorm
+  def self.convert_scorm(type)
     FileUtils.mkdir_p(OUTPUT_DIR)
 
     scorm_package_paths = Dir.glob("#{INPUT_DIR}/*.zip")
+
     scorm_package_paths.each do |package_path|
-      # Formats path to not have any spaces as the Scorm upload can't handle it
+      # Formats path to not have any spaces as the SCORM upload can't handle it.
       formatted_path = package_path.gsub(/\s/, "_")
       if formatted_path != package_path
         File.rename(package_path, formatted_path)
         package_path = formatted_path
       end
-      course = Konbata::ScormCourse.new(package_path)
+
+      klass = "Konbata::#{type.to_s.camelize}ScormCourse".constantize
+      course = klass.new(package_path)
+
       create_imscc(course)
+      course.cleanup
     end
   end
 
@@ -65,16 +72,27 @@ module Konbata
     imscc = CanvasCc::CanvasCC::CartridgeCreator.
       new(course.canvas_course).
       create(Dir.mktmpdir)
+
     FileUtils.cp(imscc, OUTPUT_DIR)
+    FileUtils.remove_entry_secure(imscc)
+  end
+
+  ##
+  # Uploads all .imscc files in the canvas directory to Canvas.
+  ##
+  def self.upload_courses(type)
+    imscc_paths = Dir.glob("#{OUTPUT_DIR}/*.imscc")
+
+    imscc_paths.each { |imscc| Konbata.upload_course(imscc, type) }
   end
 
   ##
   # Uploads a course to Canvas.
   ##
-  def self.initialize_course(canvas_file_path)
-    metadata = Konbata::UploadCourse.metadata_from_file(canvas_file_path)
-    course = Konbata::UploadCourse.from_metadata(metadata)
+  def self.upload_course(imscc_file_path, type)
+    metadata = Konbata::UploadCourse.metadata_from_file(imscc_file_path)
+    course = Konbata::UploadCourse.from_metadata(metadata, type)
     source_for_imscc = "#{INPUT_DIR}/#{metadata[:title]}.zip"
-    course.upload_content(canvas_file_path, source_for_imscc)
+    course.upload_content(imscc_file_path, source_for_imscc)
   end
 end

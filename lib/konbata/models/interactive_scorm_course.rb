@@ -13,20 +13,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require "canvas_cc"
-
 module Konbata
-  ##
-  # Creates and returns a canvas_cc module object.
-  ##
-  class CanvasModule
-    def self.create(title)
-      canvas_module = CanvasCc::CanvasCC::Models::CanvasModule.new
-      canvas_module.identifier = Konbata.create_random_hex
-      canvas_module.title = title
-      canvas_module.workflow_state = "active"
+  class InteractiveScormCourse < ScormCourse
+    DEFAULT_VIEW = "assignments".freeze
 
-      canvas_module
+    ##
+    # Creates and memoizes a canvas_cc course for the SCORM package.
+    ##
+    def canvas_course
+      @canvas_course ||= _create_canvas_course(DEFAULT_VIEW)
     end
   end
 end
