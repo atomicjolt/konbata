@@ -23,6 +23,7 @@ module Konbata
     attr_reader :canvas_course
 
     POINTS_POSSIBLE = 100
+    UPLOAD_LOG_DIR = "uploaded".freeze
 
     def initialize(course_resource, type)
       @course_resource = course_resource
@@ -109,6 +110,7 @@ module Konbata
       puts "Uploading: #{name}"
       upload_to_s3(migration, filename)
       change_tabs_visibility
+      _log_upload
       puts "Done uploading: #{name}"
 
       if File.exist?(source_for_imscc)
@@ -248,6 +250,17 @@ module Konbata
       end
 
       labels
+    end
+
+    ##
+    # Logs the upload by adding the current datetime to a log file named after
+    # the course.
+    ##
+    def _log_upload
+      FileUtils.mkdir_p(UPLOAD_LOG_DIR)
+
+      log_file = File.join(UPLOAD_LOG_DIR, "#{@course_resource.name}.txt")
+      File.open(log_file, "a") { |file| file << "#{Time.now}\n" }
     end
   end
 end
