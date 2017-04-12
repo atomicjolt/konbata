@@ -28,7 +28,7 @@ module Konbata
   FILE_BASE = "$IMS_CC_FILEBASE$".freeze
 
   def self.configuration
-    @configuration ||= Configuration.new
+    @configuration ||= Konbata::Configuration.new
   end
 
   ##

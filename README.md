@@ -97,7 +97,7 @@ Delete the entire output folder:
 rake konbata:clean
 ```
 
-Note: If you are using Zsh as your shell, you will probably need to escape brackets when running these Rake tasks. e.g. `rake konbata:upload\[interactive]\]` or `rake 'konbata:upload[interactive]'`. Check [this article](https://robots.thoughtbot.com/how-to-use-arguments-in-a-rake-task) for more details.
+Note: If you are using Zsh as your shell, you will probably need to escape brackets when running these Rake tasks. e.g. `rake konbata:upload\[interactive\]` or `rake 'konbata:upload[interactive]'`. Check [this article](https://robots.thoughtbot.com/how-to-use-arguments-in-a-rake-task) for more details.
 
 ## License
 

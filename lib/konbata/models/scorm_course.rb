@@ -24,7 +24,7 @@ require "konbata/models/scorm_page"
 module Konbata
   class ScormCourse
     def initialize(package_path)
-      @package = ScormPackage.new(package_path)
+      @package = Konbata::ScormPackage.new(package_path)
     end
 
     def cleanup
@@ -37,13 +37,13 @@ module Konbata
     # Creates a canvas_cc course for the SCORM package.
     ##
     def _create_canvas_course(default_view)
-      canvas_course = CanvasCourse.create(
+      canvas_course = Konbata::CanvasCourse.create(
         File.basename(@package.filepath, ".zip"),
         course_code: @package.course_code,
         default_view: default_view,
       )
 
-      scorm_file = ScormFile.new(@package.filepath)
+      scorm_file = Konbata::ScormFile.new(@package.filepath)
       canvas_course.files << scorm_file.canvas_file
 
       _pdfs_to_files.each { |file| canvas_course.files << file.canvas_file }
@@ -58,7 +58,7 @@ module Konbata
     ##
     def _pdfs_to_files
       @package.pdfs.map do |extracted_to, file_name|
-        ScormFile.new(extracted_to, file_name)
+        Konbata::ScormFile.new(extracted_to, file_name)
       end
     end
 
@@ -68,7 +68,7 @@ module Konbata
     ##
     def _images_to_files
       @package.resource_images.map do |image|
-        ScormFile.new(image, File.join("images", File.basename(image)))
+        Konbata::ScormFile.new(image, File.join("images", File.basename(image)))
       end
     end
   end

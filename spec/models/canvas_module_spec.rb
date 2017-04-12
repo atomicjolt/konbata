@@ -19,8 +19,7 @@ require "konbata/models/canvas_module"
 describe Konbata::CanvasModule do
   describe ".create" do
     before do
-      @volume = "3"
-      @module = Konbata::CanvasModule.create("Volume #{@volume}")
+      @module = Konbata::CanvasModule.create("Module")
     end
 
     it "returns a canvas_cc module" do
@@ -32,7 +31,7 @@ describe Konbata::CanvasModule do
     end
 
     it "gives the module a title" do
-      assert_equal("Volume 3", @module.title)
+      assert_equal("Module", @module.title)
     end
 
     it "gives the module a workflow state of 'active'" do

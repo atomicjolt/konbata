@@ -35,7 +35,7 @@ describe Konbata::CanvasFile do
       refute_nil(@canvas_file.identifier)
     end
 
-    it "it makes the file visible" do
+    it "makes the file visible" do
       refute(@canvas_file.hidden)
     end
 
