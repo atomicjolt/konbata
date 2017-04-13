@@ -280,7 +280,7 @@ module Konbata
     ##
     # Requests a list of all the pages for the course from Canvas.
     ##
-    def get_pages
+    def _get_pages
       pages_url = Konbata.configuration.canvas_url +
         "/v1/courses/#{@course_resource.id}/pages"
 
@@ -295,7 +295,7 @@ module Konbata
     ##
     # Requests the full page object from the Canvas API.
     ##
-    def get_full_page(page)
+    def _get_full_page(page)
       page_url = Konbata.configuration.canvas_url +
         "/v1/courses/#{@course_resource.id}/pages/#{page['url']}"
 
@@ -310,7 +310,7 @@ module Konbata
     ##
     # Requests the public_file_url for the given file ID.
     ##
-    def get_public_file_url(file_id)
+    def _get_public_file_url(file_id)
       file_url = Konbata.configuration.canvas_url +
         "/v1/files/#{file_id}/public_url"
 
@@ -325,7 +325,7 @@ module Konbata
     ##
     # Replaces #replace_with_preview with the actual PDF preview.
     ##
-    def embed_pdf_in_page(page)
+    def _embed_pdf_in_page(page)
       page_url = Konbata.configuration.canvas_url +
         "/v1/courses/#{@course_resource.id}/pages/#{page['url']}"
 
@@ -333,7 +333,7 @@ module Konbata
       href = nodes.at("#replace_with_preview").at("a").attr("href")
       file_id = href[%r{files/(\d+)/}i, 1]
 
-      public_url = get_public_file_url(file_id)
+      public_url = _get_public_file_url(file_id)
       preview_url =
         "//docs.google.com/viewer?embedded=true&url=#{CGI.escape(public_url)}"
 
@@ -356,9 +356,9 @@ module Konbata
     # inline preview using an authenticated file URL.
     ##
     def _add_pdf_previews
-      get_pages.each do |page|
-        full_page = get_full_page(page)
-        embed_pdf_in_page(full_page)
+      _get_pages.each do |page|
+        full_page = _get_full_page(page)
+        _embed_pdf_in_page(full_page)
       end
     end
 
