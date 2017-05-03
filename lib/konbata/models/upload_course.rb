@@ -109,7 +109,9 @@ module Konbata
 
       puts "Uploading: #{name}"
       upload_to_s3(migration, filename)
-      change_tabs_visibility
+      _wait_for_complete_migration
+      _change_tabs_visibility
+      _add_pdf_previews if @type == :non_interactive
       _log_upload
       puts "Done uploading: #{name}"
 
@@ -151,59 +153,6 @@ module Konbata
     end
 
     ##
-    # Requests all of the tabs available for a course. Sets hidden to `false`
-    # for any tab in the label whitelist; sets hidden to `true` for all others.
-    # `whitelisted_labels` should be an array of strings or regexps.
-    ##
-    def change_tabs_visibility(whitelisted_labels = nil)
-      whitelisted_labels ||= _default_whitelisted_labels
-      whitelisted_labels.map! { |label| Regexp.new(label) }
-
-      tab_url_base = Konbata.configuration.canvas_url +
-        "/v1/courses/#{@course_resource.id}/tabs"
-
-      tabs = get_tabs(tab_url_base)
-
-      tabs.each do |tab|
-        # Settings and Home tabs can't be changed.
-        next if tab["id"] == "home" || tab["id"] == "settings"
-
-        visible = whitelisted_labels.any? { |label| tab["label"] =~ label }
-
-        change_tab_visibility(tab, visible, tab_url_base)
-      end
-    end
-
-    ##
-    # Gets the tabs from the given Canvas URL.
-    ##
-    def get_tabs(tab_url_base)
-      RestClient.get(
-        tab_url_base,
-        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
-      ) do |response|
-        JSON.parse(response.body)
-      end
-    end
-
-    ##
-    # Issues a PUT request to Canvas using the given URL and sets the given
-    # tabs hidden attribute to true or false.
-    ##
-    def change_tab_visibility(tab, visible, tab_url_base)
-      RestClient.put(
-        tab_url_base + "/#{tab['id']}",
-        {
-          hidden: !visible,
-        },
-        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
-      )
-    rescue RestClient::BadRequest => e
-      puts "WARNING: Failed to update tab #{tab['label']} for course " \
-      "#{@course_resource.id}. Error: #{e}"
-    end
-
-    ##
     # Assembles the launch url with the course_id
     ##
     def scorm_launch_url(package_id)
@@ -238,6 +187,59 @@ module Konbata
     private
 
     ##
+    # Requests all of the tabs available for a course. Sets hidden to `false`
+    # for any tab in the label whitelist; sets hidden to `true` for all others.
+    # `whitelisted_labels` should be an array of strings or regexps.
+    ##
+    def _change_tabs_visibility(whitelisted_labels = nil)
+      whitelisted_labels ||= _default_whitelisted_labels
+      whitelisted_labels.map! { |label| Regexp.new(label) }
+
+      tab_url_base = Konbata.configuration.canvas_url +
+        "/v1/courses/#{@course_resource.id}/tabs"
+
+      tabs = _get_tabs(tab_url_base)
+
+      tabs.each do |tab|
+        # Settings and Home tabs can't be changed.
+        next if tab["id"] == "home" || tab["id"] == "settings"
+
+        visible = whitelisted_labels.any? { |label| tab["label"] =~ label }
+
+        _change_tab_visibility(tab, visible, tab_url_base)
+      end
+    end
+
+    ##
+    # Gets the tabs from the given Canvas URL.
+    ##
+    def _get_tabs(tab_url_base)
+      RestClient.get(
+        tab_url_base,
+        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+      ) do |response|
+        JSON.parse(response.body)
+      end
+    end
+
+    ##
+    # Issues a PUT request to Canvas using the given URL and sets the given
+    # tabs hidden attribute to true or false.
+    ##
+    def _change_tab_visibility(tab, visible, tab_url_base)
+      RestClient.put(
+        tab_url_base + "/#{tab['id']}",
+        {
+          hidden: !visible,
+        },
+        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+      )
+    rescue RestClient::BadRequest => e
+      puts "WARNING: Failed to update tab #{tab['label']} for course " \
+      "#{@course_resource.id}. Error: #{e}"
+    end
+
+    ##
     # Returns the default whitelisted labels based on course type.
     ##
     def _default_whitelisted_labels
@@ -250,6 +252,114 @@ module Konbata
       end
 
       labels
+    end
+
+    ##
+    # Queuries the course's content migration status and sleeps until the status
+    # says complete.
+    ##
+    def _wait_for_complete_migration
+      workflow_state = nil
+
+      until workflow_state =~ /complete/i
+        puts "Migration is #{workflow_state}..."
+        sleep(2)
+
+        migrations_url = Konbata.configuration.canvas_url +
+          "/v1/courses/#{@course_resource.id}/content_migrations"
+
+        RestClient.get(
+          migrations_url,
+          Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+        ) do |response|
+          workflow_state = JSON.parse(response).first["workflow_state"]
+        end
+      end
+    end
+
+    ##
+    # Requests a list of all the pages for the course from Canvas.
+    ##
+    def _get_pages
+      pages_url = Konbata.configuration.canvas_url +
+        "/v1/courses/#{@course_resource.id}/pages"
+
+      RestClient.get(
+        pages_url,
+        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+      ) do |response|
+        JSON.parse(response.body)
+      end
+    end
+
+    ##
+    # Requests the full page object from the Canvas API.
+    ##
+    def _get_full_page(page)
+      page_url = Konbata.configuration.canvas_url +
+        "/v1/courses/#{@course_resource.id}/pages/#{page['url']}"
+
+      RestClient.get(
+        page_url,
+        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+      ) do |response|
+        JSON.parse(response.body)
+      end
+    end
+
+    ##
+    # Requests the public_file_url for the given file ID.
+    ##
+    def _get_public_file_url(file_id)
+      file_url = Konbata.configuration.canvas_url +
+        "/v1/files/#{file_id}/public_url"
+
+      RestClient.get(
+        file_url,
+        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+      ) do |response|
+        JSON.parse(response)["public_url"]
+      end
+    end
+
+    ##
+    # Replaces #replace_with_preview with the actual PDF preview.
+    ##
+    def _embed_pdf_in_page(page)
+      page_url = Konbata.configuration.canvas_url +
+        "/v1/courses/#{@course_resource.id}/pages/#{page['url']}"
+
+      nodes = Nokogiri::HTML(page["body"])
+      href = nodes.at("#replace_with_preview").at("a").attr("href")
+      file_id = href[%r{files/(\d+)/}i, 1]
+
+      public_url = _get_public_file_url(file_id)
+      preview_url =
+        "//docs.google.com/viewer?embedded=true&url=#{CGI.escape(public_url)}"
+
+      new_body = page["body"].sub(
+        /<span id="replace_with_preview">.+<\/span>/i,
+        "<iframe src='#{preview_url}' width='100%' height='95%'></iframe>",
+      )
+
+      RestClient.put(
+        page_url,
+        {
+          "wiki_page[body]" => new_body,
+        },
+        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+      )
+    end
+
+    ##
+    # Locates embedded PDFs in the course pages and updates them to an actual
+    # inline preview using an authenticated file URL.
+    ##
+    def _add_pdf_previews
+      _get_pages.each do |page|
+        full_page = _get_full_page(page)
+        _embed_pdf_in_page(full_page)
+      end
     end
 
     ##

@@ -83,6 +83,10 @@ module Konbata
         <p style="text-align: left">
           Download: <a href="#{_primary_pdf}">#{File.basename(_primary_pdf)}</a>
         </p>
+
+        <div id="pdf_preview" style="height: 705px;" data-mimetype="application/pdf">
+          <span id="replace_with_preview"><a href="#{_primary_pdf}"></a></span>
+        </div>
       HEREDOC
 
       html.sub(/<iframe.*<\/iframe>/mi, pdf_html)
