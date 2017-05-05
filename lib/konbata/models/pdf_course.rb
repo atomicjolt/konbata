@@ -15,6 +15,8 @@
 
 module Konbata
   class PDFCourse
+    DEFAULT_VIEW = "modules".freeze
+
     def initialize(zip_path)
       @zip_path = zip_path
       @temp_dir = Dir.mktmpdir
@@ -43,6 +45,7 @@ module Konbata
     def _create_canvas_course
       canvas_course = Konbata::CanvasCourse.create(
         @title,
+        default_view: DEFAULT_VIEW,
       )
 
       canvas_module = CanvasModule.create(@title)
