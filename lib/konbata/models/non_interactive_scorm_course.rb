@@ -32,6 +32,7 @@ module Konbata
           module_item = CanvasModuleItem.create(
             page.canvas_page.title,
             page.canvas_page.identifier,
+            "WikiPage",
           )
 
           canvas_module.module_items << module_item
