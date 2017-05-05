@@ -18,6 +18,7 @@ module Konbata
     def initialize(zip_path)
       @zip_path = zip_path
       @temp_dir = Dir.mktmpdir
+      @title = File.basename(@zip_path, ".zip")
     end
 
     ##
@@ -41,11 +42,25 @@ module Konbata
     ##
     def _create_canvas_course
       canvas_course = Konbata::CanvasCourse.create(
-        File.basename(@zip_path, ".zip"),
-        course_code: File.basename(@zip_path, ".zip"),
+        @title,
       )
 
-      _pdfs_to_files.each { |file| canvas_course.files << file.canvas_file }
+      canvas_module = CanvasModule.create(@title)
+
+      _pdfs_to_files.each do |file|
+        canvas_course.files << file.canvas_file
+
+        module_item = CanvasModuleItem.create(
+          File.basename(file.canvas_file.file_path),
+          file.canvas_file.identifier,
+          "Attachment",
+        )
+
+        canvas_module.module_items << module_item
+      end
+
+      canvas_module.module_items.sort_by!(&:title)
+      canvas_course.canvas_modules << canvas_module
 
       canvas_course
     end
