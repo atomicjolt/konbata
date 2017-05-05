@@ -27,10 +27,10 @@ require "konbata"
 ##
 
 def validate_type_arg(type)
-  return if type == "interactive" || type == "non_interactive"
+  return if %w{interactive non_interactive pdfs}.include?(type)
 
-  puts "ERROR: Must pass 'interactive' or 'non_interactive' as an argument to" \
-  " the task."
+  puts "ERROR: Must pass 'interactive', 'non_interactive' or 'pdfs' as an " \
+  "argument to the task."
 
   exit
 end
@@ -41,17 +41,17 @@ module Konbata
 
     def self.install_tasks
       namespace :konbata do
-        desc "Find and process SCORM packages, accepts 'interactive' or " \
-        "'non_interactive' as an argument."
-        task :scorm, [:type] do |_, args|
+        desc "Find and process SCORM packages, accepts 'interactive', " \
+        "'non_interactive' or 'pdfs' as an argument."
+        task :convert, [:type] do |_, args|
           validate_type_arg(args[:type])
           type = args[:type].to_sym
 
-          Konbata.convert_scorm(type)
+          Konbata.convert_zips(type)
         end
 
-        desc "Upload .imscc files to Canvas, accepts 'interactive' or " \
-        "'non_interactive' as an argument."
+        desc "Upload .imscc files to Canvas, accepts 'interactive', " \
+        "'non_interactive' or 'pdfs' as an argument."
         task :upload, [:type] do |_, args|
           validate_type_arg(args[:type])
           type = args[:type].to_sym
