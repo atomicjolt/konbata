@@ -117,9 +117,13 @@ module Konbata
     # Returns the default organization from the manifest as a Nokogiri object.
     ##
     def _default_organization
-      @default_organization = begin
+      @default_organization ||= begin
         default_organization_id = _manifest.at(:organizations).attr(:default)
-        _manifest.at("organization[identifier='#{default_organization_id}']")
+        default_organization =
+          _manifest.at("organization[identifier='#{default_organization_id}']")
+
+        # Uses first organization if default organization isn't found.
+        default_organization || _manifest.at(:organizations).first_element_child
       end
     end
 
