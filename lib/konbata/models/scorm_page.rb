@@ -47,8 +47,11 @@ module Konbata
     # version.
     ##
     def _page_html
-      html = File.read(File.join(@item.directory, @item.primary_file))
+      primary_file_path = File.join(@item.directory, @item.primary_file)
 
+      return "" unless @item.primary_file && File.exist?(primary_file_path)
+
+      html = File.read(primary_file_path)
       html = _remove_script_tags(html)
       html = _remove_unwanted_images(html)
       html = _embed_pdf(html)
