@@ -91,4 +91,16 @@ describe Konbata::ScormPackage do
       )
     end
   end
+
+  describe "#_default_organization" do
+    before do
+      @package_without_default_org = Konbata::ScormPackage.new(
+        fixture_path("non_interactive_scorm_no_default_organization.zip"),
+      )
+    end
+
+    it "uses the first organization in the manifest if there is no default" do
+      assert_equal("Sample Course", @package_without_default_org.course_title)
+    end
+  end
 end
