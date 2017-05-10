@@ -21,6 +21,7 @@ module Konbata
 
     def initialize(filepath)
       @filepath = filepath
+      @zip = Zip::File.new(@filepath)
       @temp_dir = Dir.mktmpdir
     end
 
@@ -44,7 +45,7 @@ module Konbata
     ##
     def pdfs
       @pdfs ||= begin
-        pdf_entries = Zip::File.new(@filepath).entries.select do |entry|
+        pdf_entries = @zip.entries.select do |entry|
           File.extname(entry.name) =~ /\.pdf/i
         end
 
@@ -105,7 +106,7 @@ module Konbata
         temp_dir = Dir.mktmpdir
         manifest_path = File.join(temp_dir, MANIFEST_FILENAME)
 
-        Zip::File.new(@filepath).entries.detect do |entry|
+        @zip.entries.detect do |entry|
           entry.name == MANIFEST_FILENAME
         end.extract(manifest_path)
 
@@ -117,9 +118,13 @@ module Konbata
     # Returns the default organization from the manifest as a Nokogiri object.
     ##
     def _default_organization
-      @default_organization = begin
+      @default_organization ||= begin
         default_organization_id = _manifest.at(:organizations).attr(:default)
-        _manifest.at("organization[identifier='#{default_organization_id}']")
+        default_organization =
+          _manifest.at("organization[identifier='#{default_organization_id}']")
+
+        # Uses first organization if default organization isn't found.
+        default_organization || _manifest.at(:organizations).first_element_child
       end
     end
 
@@ -131,6 +136,8 @@ module Konbata
         files = items.map do |_, item_data|
           item_data.files
         end.flatten
+
+        files.select! { |file| @zip.find_entry(file) }
 
         files.map { |file| File.join(@temp_dir, file) }
       end
@@ -163,14 +170,15 @@ module Konbata
     # list of the file name and extracted locations.
     ##
     def _extract_files(files)
-      zip = Zip::File.new(@filepath)
-
       files.map do |file|
-        FileUtils.mkdir_p(File.join(@temp_dir, File.dirname(file)))
+        entry = @zip.find_entry(file)
+        next unless entry
+
         extract_to = File.join(@temp_dir, file)
 
         unless File.exist?(extract_to)
-          zip.find_entry(file).extract(extract_to)
+          FileUtils.mkdir_p(File.join(@temp_dir, File.dirname(file)))
+          entry.extract(extract_to)
         end
 
         [extract_to, file]

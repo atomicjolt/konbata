@@ -58,6 +58,20 @@ describe Konbata::ScormPackage do
     it "returns the correct number of images" do
       assert_equal(4, @scorm_package.resource_images.size)
     end
+
+    it "doesn't include images listed in the manifest that aren't in the zip" do
+      scorm_package = Konbata::ScormPackage.new(
+        fixture_path("non_interactive_scorm_inaccurate_manifest_files.zip"),
+      )
+
+      # Volume2/images/image2.jpg is included in the manifest but isn't in the
+      # zip archive.
+      assert(
+        scorm_package.resource_images.none? do |image|
+          image =~ %r{volume2/images/image2.jpg}
+        end,
+      )
+    end
   end
 
   describe "#items" do
@@ -89,6 +103,18 @@ describe Konbata::ScormPackage do
         ["Orientation/orientation.html"],
         @scorm_package.items.first[1].files,
       )
+    end
+  end
+
+  describe "#_default_organization" do
+    before do
+      @package_without_default_org = Konbata::ScormPackage.new(
+        fixture_path("non_interactive_scorm_no_default_organization.zip"),
+      )
+    end
+
+    it "uses the first organization in the manifest if there is no default" do
+      assert_equal("Sample Course", @package_without_default_org.course_title)
     end
   end
 end

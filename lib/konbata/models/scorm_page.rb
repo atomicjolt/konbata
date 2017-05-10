@@ -35,8 +35,10 @@ module Konbata
     # The primary PDF is the PDF file found at the top level of @item's folder.
     ##
     def _primary_pdf
-      @item.files.detect do |file|
-        file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
+      @primary_pdf ||= begin
+        @item.files.detect do |file|
+          file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
+        end
       end
     end
 
@@ -45,8 +47,11 @@ module Konbata
     # version.
     ##
     def _page_html
-      html = File.read(File.join(@item.directory, @item.primary_file))
+      primary_file_path = File.join(@item.directory, @item.primary_file)
 
+      return "" unless File.exist?(primary_file_path)
+
+      html = File.read(primary_file_path)
       html = _remove_script_tags(html)
       html = _remove_unwanted_images(html)
       html = _embed_pdf(html)
@@ -81,7 +86,7 @@ module Konbata
     def _embed_pdf(html)
       pdf_html = <<~HEREDOC
         <p style="text-align: left">
-          Download: <a href="#{_primary_pdf}">#{File.basename(_primary_pdf)}</a>
+          Download: <a href="#{_primary_pdf}">#{File.basename(_primary_pdf.to_s)}</a>
         </p>
 
         <div id="pdf_preview" style="height: 705px;" data-mimetype="application/pdf">
