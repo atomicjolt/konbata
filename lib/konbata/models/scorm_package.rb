@@ -137,6 +137,8 @@ module Konbata
           item_data.files
         end.flatten
 
+        files.select! { |file| @zip.find_entry(file) }
+
         files.map { |file| File.join(@temp_dir, file) }
       end
     end
