@@ -331,10 +331,10 @@ module Konbata
 
       nodes = Nokogiri::HTML(page["body"])
       href = nodes&.at("#replace_with_preview")&.at("a")&.attr("href")
+      file_id = href&.match(%r{files/(\d+)/}i)&.captures&.first
+      public_url = _get_public_file_url(file_id)
 
-      if href
-        file_id = href[%r{files/(\d+)/}i, 1]
-        public_url = _get_public_file_url(file_id)
+      if public_url
         preview_url =
           "//docs.google.com/viewer?embedded=true&url=#{CGI.escape(public_url)}"
 
