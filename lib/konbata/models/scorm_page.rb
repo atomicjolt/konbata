@@ -35,8 +35,10 @@ module Konbata
     # The primary PDF is the PDF file found at the top level of @item's folder.
     ##
     def _primary_pdf
-      @item.files.detect do |file|
-        file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
+      @primary_pdf ||= begin
+        @item.files.detect do |file|
+          file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
+        end
       end
     end
 
