@@ -86,7 +86,7 @@ module Konbata
     def _embed_pdf(html)
       pdf_html = <<~HEREDOC
         <p style="text-align: left">
-          Download: <a href="#{_primary_pdf}">#{File.basename(_primary_pdf)}</a>
+          Download: <a href="#{_primary_pdf}">#{File.basename(_primary_pdf.to_s)}</a>
         </p>
 
         <div id="pdf_preview" style="height: 705px;" data-mimetype="application/pdf">
