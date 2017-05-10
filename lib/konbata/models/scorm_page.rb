@@ -49,7 +49,7 @@ module Konbata
     def _page_html
       primary_file_path = File.join(@item.directory, @item.primary_file)
 
-      return "" unless @item.primary_file && File.exist?(primary_file_path)
+      return "" unless File.exist?(primary_file_path)
 
       html = File.read(primary_file_path)
       html = _remove_script_tags(html)
