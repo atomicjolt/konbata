@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+require "konbata/zip_utils"
+
 module Konbata
   class PDFCourse
     DEFAULT_VIEW = "modules".freeze
@@ -94,21 +96,15 @@ module Konbata
     end
 
     ##
-    # Extracts the list of files from the SCORM package zip and returns a nested
-    # list of the file name and extracted locations.
+    # Creates a ScormFile object for each PDF in the zip file and returns
+    # them as an array.
     ##
-    def _extract_files(files)
-      zip = Zip::File.new(@zip_path)
+    def _pdfs_to_files
+      pdfs = ZipUtils.pdfs(@zip_path)
+      extracted_pdfs = ZipUtils.extract_files(@zip_path, pdfs, @temp_dir)
 
-      files.map do |file|
-        FileUtils.mkdir_p(File.join(@temp_dir, File.dirname(file)))
-        extract_to = File.join(@temp_dir, file)
-
-        unless File.exist?(extract_to)
-          zip.find_entry(file).extract(extract_to)
-        end
-
-        [extract_to, file]
+      extracted_pdfs.map do |extracted_to, file_name|
+        Konbata::ScormFile.new(extracted_to, file_name)
       end
     end
   end
