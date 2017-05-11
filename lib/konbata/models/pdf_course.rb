@@ -54,14 +54,7 @@ module Konbata
 
       _pdfs_to_files.each do |file|
         canvas_course.files << file.canvas_file
-
-        module_item = CanvasModuleItem.create(
-          File.basename(file.canvas_file.file_path),
-          file.canvas_file.identifier,
-          "Attachment",
-        )
-
-        canvas_module.module_items << module_item
+        _add_file_to_module(canvas_module, file)
       end
 
       canvas_module.module_items.sort_by!(&:title)
@@ -71,28 +64,17 @@ module Konbata
     end
 
     ##
-    # Creates a ScormFile object for each element in @package.pdfs and returns
-    # them as an array.
+    # Creates a Canvas module item for the given file and adds it to the
+    # given Canvas module.
     ##
-    def _pdfs_to_files
-      _pdfs.map do |extracted_to, file_name|
-        Konbata::ScormFile.new(extracted_to, file_name)
-      end
-    end
+    def _add_file_to_module(canvas_module, file)
+      module_item = CanvasModuleItem.create(
+        File.basename(file.canvas_file.file_path),
+        file.canvas_file.identifier,
+        "Attachment",
+      )
 
-    ##
-    # Finds and returns any PDF files in the SCORM package as a nested array of
-    # PDF file names and extracted locations.
-    ##
-    def _pdfs
-      @pdfs ||= begin
-        pdf_entries = Zip::File.new(@zip_path).entries.select do |entry|
-          File.extname(entry.name) =~ /\.pdf/i
-        end
-
-        pdf_entries.map!(&:name)
-        _extract_files(pdf_entries)
-      end
+      canvas_module.module_items << module_item
     end
 
     ##
