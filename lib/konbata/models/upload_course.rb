@@ -330,25 +330,27 @@ module Konbata
         "/v1/courses/#{@course_resource.id}/pages/#{page['url']}"
 
       nodes = Nokogiri::HTML(page["body"])
-      href = nodes.at("#replace_with_preview").at("a").attr("href")
-      file_id = href[%r{files/(\d+)/}i, 1]
-
+      href = nodes&.at("#replace_with_preview")&.at("a")&.attr("href")
+      file_id = href&.match(%r{files/(\d+)/}i)&.captures&.first
       public_url = _get_public_file_url(file_id)
-      preview_url =
-        "//docs.google.com/viewer?embedded=true&url=#{CGI.escape(public_url)}"
 
-      new_body = page["body"].sub(
-        /<span id="replace_with_preview">.+<\/span>/i,
-        "<iframe src='#{preview_url}' width='100%' height='95%'></iframe>",
-      )
+      if public_url
+        preview_url =
+          "//docs.google.com/viewer?embedded=true&url=#{CGI.escape(public_url)}"
 
-      RestClient.put(
-        page_url,
-        {
-          "wiki_page[body]" => new_body,
-        },
-        Authorization: "Bearer #{Konbata.configuration.canvas_token}",
-      )
+        new_body = page["body"].sub(
+          /<span id="replace_with_preview">.+<\/span>/i,
+          "<iframe src='#{preview_url}' width='100%' height='95%'></iframe>",
+        )
+
+        RestClient.put(
+          page_url,
+          {
+            "wiki_page[body]" => new_body,
+          },
+          Authorization: "Bearer #{Konbata.configuration.canvas_token}",
+        )
+      end
     end
 
     ##

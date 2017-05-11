@@ -51,6 +51,7 @@ module Konbata
     zip_paths = Dir.glob("#{INPUT_DIR}/*.zip")
 
     zip_paths.each do |zip_path|
+      puts "Converting #{File.basename(zip_path)}"
       convert_zip(zip_path, type)
     end
   end
