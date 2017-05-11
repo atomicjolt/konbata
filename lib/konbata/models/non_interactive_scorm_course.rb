@@ -28,14 +28,7 @@ module Konbata
 
         _items_to_pages.each do |page|
           canvas_course.pages << page.canvas_page
-
-          module_item = CanvasModuleItem.create(
-            page.canvas_page.title,
-            page.canvas_page.identifier,
-            "WikiPage",
-          )
-
-          canvas_module.module_items << module_item
+          _add_page_to_module(canvas_module, page)
         end
 
         canvas_course.canvas_modules << canvas_module
@@ -45,6 +38,20 @@ module Konbata
     end
 
     private
+
+    ##
+    # Creates a Canvas module item for the given file and adds it to the
+    # given Canvas module.
+    ##
+    def _add_page_to_module(canvas_module, page)
+      module_item = CanvasModuleItem.create(
+        page.canvas_page.title,
+        page.canvas_page.identifier,
+        "WikiPage",
+      )
+
+      canvas_module.module_items << module_item
+    end
 
     # Creates a ScormPage object for each element in @package.items and returns
     # them as an array.
