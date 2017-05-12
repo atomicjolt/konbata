@@ -158,29 +158,9 @@ module Konbata
       files = resource.search(:file)
 
       filepaths = files.map { |file| file.attr(:href) }
-      _extract_files(filepaths)
+      Konbata::ZipUtils.extract_files(@filepath, filepaths, @temp_dir)
 
       filepaths
-    end
-
-    ##
-    # Extracts the list of files from the SCORM package zip and returns a nested
-    # list of the file name and extracted locations.
-    ##
-    def _extract_files(files)
-      files.map do |file|
-        entry = @zip.find_entry(file)
-        next unless entry
-
-        extract_to = File.join(@temp_dir, file)
-
-        unless File.exist?(extract_to)
-          FileUtils.mkdir_p(File.join(@temp_dir, File.dirname(file)))
-          entry.extract(extract_to)
-        end
-
-        [extract_to, file]
-      end
     end
   end
 end
