@@ -82,8 +82,12 @@ module Konbata
     # them as an array.
     ##
     def _pdfs_to_files
-      pdfs = ZipUtils.pdfs(@zip_path)
-      extracted_pdfs = ZipUtils.extract_files(@zip_path, pdfs, @temp_dir)
+      pdfs = Konbata::ZipUtils.pdfs(@zip_path)
+      extracted_pdfs = Konbata::ZipUtils.extract_files(
+        @zip_path,
+        pdfs,
+        @temp_dir,
+      )
 
       extracted_pdfs.map do |extracted_to, file_name|
         Konbata::ScormFile.new(extracted_to, file_name)
