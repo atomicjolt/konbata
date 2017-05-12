@@ -47,8 +47,8 @@ module Konbata
     ##
     def pdfs
       @pdfs ||= begin
-        pdfs = ZipUtils.pdfs(@filepath)
-        ZipUtils.extract_files(@filepath, pdfs, @temp_dir)
+        pdfs = Konbata::ZipUtils.pdfs(@filepath)
+        Konbata::ZipUtils.extract_files(@filepath, pdfs, @temp_dir)
       end
     end
 
