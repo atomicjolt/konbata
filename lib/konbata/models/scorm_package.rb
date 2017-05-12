@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+require "konbata/zip_utils"
+
 module Konbata
   class ScormPackage
     attr_reader :filepath
@@ -45,12 +47,8 @@ module Konbata
     ##
     def pdfs
       @pdfs ||= begin
-        pdf_entries = @zip.entries.select do |entry|
-          File.extname(entry.name) =~ /\.pdf/i
-        end
-
-        pdf_entries.map!(&:name)
-        _extract_files(pdf_entries)
+        pdfs = ZipUtils.pdfs(@filepath)
+        ZipUtils.extract_files(@filepath, pdfs, @temp_dir)
       end
     end
 

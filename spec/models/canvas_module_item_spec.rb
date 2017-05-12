@@ -21,7 +21,11 @@ describe Konbata::CanvasModuleItem do
     before do
       @title = "Test Module Item"
       @identifierref = Konbata.create_random_hex
-      @module_item = Konbata::CanvasModuleItem.create(@title, @identifierref)
+      @module_item = Konbata::CanvasModuleItem.create(
+        @title,
+        @identifierref,
+        "WikiPage",
+      )
     end
 
     it "returns a canvas_cc module item" do
@@ -36,7 +40,7 @@ describe Konbata::CanvasModuleItem do
       refute_nil(@module_item.identifier)
     end
 
-    it "gives the module item a content type of 'WikiPage'" do
+    it "gives the module item a content type" do
       assert_equal("WikiPage", @module_item.content_type)
     end
 

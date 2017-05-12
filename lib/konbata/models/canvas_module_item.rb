@@ -20,11 +20,11 @@ module Konbata
     ##
     # Creates and returns a canvas_cc module item object.
     ##
-    def self.create(title, identifierref)
+    def self.create(title, identifierref, content_type)
       module_item = CanvasCc::CanvasCC::Models::ModuleItem.new
       module_item.identifier = Konbata.create_random_hex
       module_item.workflow_state = "active"
-      module_item.content_type = "WikiPage"
+      module_item.content_type = content_type
       module_item.title = title
       module_item.identifierref = identifierref
 

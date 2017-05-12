@@ -20,6 +20,7 @@ require "konbata/configuration"
 require "konbata/models/scorm_course"
 require "konbata/models/interactive_scorm_course"
 require "konbata/models/non_interactive_scorm_course"
+require "konbata/models/pdf_course"
 require "konbata/models/upload_course"
 
 module Konbata
@@ -41,30 +42,40 @@ module Konbata
   end
 
   ##
-  # Iterates through every SCORM package in the sources directory and converts
+  # Iterates through every zip file in the sources directory and converts
   # them to a Canvas .imscc file.
   ##
-  def self.convert_scorm(type)
+  def self.convert_zips(type)
     FileUtils.mkdir_p(OUTPUT_DIR)
 
-    scorm_package_paths = Dir.glob("#{INPUT_DIR}/*.zip")
+    zip_paths = Dir.glob("#{INPUT_DIR}/*.zip")
 
-    scorm_package_paths.each do |package_path|
-      puts "Converting #{File.basename(package_path)}"
-
-      # Formats path to not have any spaces as the SCORM upload can't handle it.
-      formatted_path = package_path.gsub(/\s/, "_")
-      if formatted_path != package_path
-        File.rename(package_path, formatted_path)
-        package_path = formatted_path
-      end
-
-      klass = "Konbata::#{type.to_s.camelize}ScormCourse".constantize
-      course = klass.new(package_path)
-
-      create_imscc(course)
-      course.cleanup
+    zip_paths.each do |zip_path|
+      puts "Converting #{File.basename(zip_path)}"
+      convert_zip(zip_path, type)
     end
+  end
+
+  ##
+  # Converts the given zip file to a Canvas .imscc file.
+  ##
+  def self.convert_zip(zip_path, type)
+    # Formats path to not have any spaces as the SCORM upload can't handle it.
+    formatted_path = zip_path.gsub(/\s/, "_")
+    if formatted_path != zip_path
+      File.rename(zip_path, formatted_path)
+      zip_path = formatted_path
+    end
+
+    if type == :pdfs
+      course = Konbata::PDFCourse.new(zip_path)
+    else
+      klass = "Konbata::#{type.to_s.camelize}ScormCourse".constantize
+      course = klass.new(zip_path)
+    end
+
+    create_imscc(course)
+    course.cleanup
   end
 
   ##
