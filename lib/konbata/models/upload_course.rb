@@ -247,7 +247,7 @@ module Konbata
 
       if @type == :interactive
         labels << /assignments/i
-      elsif @type == :non_interactive
+      elsif @type == :non_interactive || @type == :pdfs
         labels << /modules/i
       end
 
