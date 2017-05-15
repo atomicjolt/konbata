@@ -44,13 +44,25 @@ describe "ErrorLogger" do
   end
 
   describe ".log" do
-    it "adds the given error message to the log" do
+    before do
       ErrorLogger.setup
+    end
 
+    it "adds the given error message to the log" do
       message = "Storm's approaching fast!"
       ErrorLogger.log(message)
 
       assert_includes(File.read(@log_filepath), message)
+    end
+
+    it "keeps previous log messages" do
+      message_one = "If anyone can hear me, save us!"
+      ErrorLogger.log(message_one)
+      message_two = "We're doomed!"
+      ErrorLogger.log(message_two)
+
+      assert_includes(File.read(@log_filepath), message_one)
+      assert_includes(File.read(@log_filepath), message_two)
     end
   end
 

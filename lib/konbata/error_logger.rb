@@ -22,7 +22,15 @@ module ErrorLogger
   end
 
   def self.log(message)
-    File.open(LOG_FILEPATH, "w+") { |file| file.puts(message) }
+    File.open(LOG_FILEPATH, "a") { |file| file.puts("- #{message}") }
+  end
+
+  def self.log_missing_file(file, zip_file)
+    message = "The manifest for \"#{File.basename(zip_file)}\" included a " \
+    "reference to \"#{file}\", but that file could not be found in the " \
+    "zip file. The content associated with that file is likely broken."
+
+    log(message)
   end
 
   def self.empty_log?
