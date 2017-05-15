@@ -18,65 +18,79 @@ require "konbata/error_logger"
 
 describe "ErrorLogger" do
   before do
-    @log_filepath = File.join(Dir.mktmpdir, "conversion_errors_#{Time.now}.log")
+    @log_filepath = File.join("canvas", "conversion_errors.log")
   end
 
-  describe ".initialize" do
-    it "creates a log file" do
-      ErrorLogger.new(@log_filepath)
+  after do
+    FileUtils.remove_entry_secure(@log_filepath) if File.exist?(@log_filepath)
+  end
+
+  describe ".setup" do
+    it "creates a log file if it doesn't already exist" do
+      ErrorLogger.setup
 
       assert(File.exist?(@log_filepath))
     end
+
+    it "clears out the log file contents" do
+      File.open(@log_filepath, "w") do |file|
+        file << "Just some stuff."
+      end
+
+      ErrorLogger.setup
+
+      assert_empty(File.read(@log_filepath))
+    end
   end
 
-  describe "#log_error" do
+  describe ".log" do
     it "adds the given error message to the log" do
-      logger = ErrorLogger.new(@log_filepath)
+      ErrorLogger.setup
 
       message = "Storm's approaching fast!"
-      logger.log_error(message)
+      ErrorLogger.log(message)
 
       assert_includes(File.read(@log_filepath), message)
     end
   end
 
-  describe "#notify_or_remove" do
+  describe ".notify_or_remove" do
     before do
-      @logger = ErrorLogger.new(@log_filepath)
+      ErrorLogger.setup
     end
 
     it "notifies the user if there were conversion errors" do
-      @logger.log_error("Man overboard! The ship is sinking!")
+      ErrorLogger.log("Man overboard! The ship is sinking!")
 
       assert_output(/WARNING: There were some conversion errors/i) do
-        @logger.notify_or_remove
+        ErrorLogger.notify_or_remove
       end
     end
 
     it "doesn't notify the user if there weren't errors" do
-      assert_output("") { @logger.notify_or_remove }
+      assert_output("") { ErrorLogger.notify_or_remove }
     end
 
     it "removes the log file if there weren't errors" do
-      @logger.notify_or_remove
+      ErrorLogger.notify_or_remove
 
       refute(File.exist?(@log_filepath))
     end
   end
 
-  describe "#empty_log?" do
+  describe ".empty_log?" do
     before do
-      @logger = ErrorLogger.new(@log_filepath)
+      ErrorLogger.setup
     end
 
     it "returns true if the log file is empty" do
-      assert(@logger.empty_log?)
+      assert(ErrorLogger.empty_log?)
     end
 
     it "returns false if the log file isn't empty" do
-      @logger.log_error("Winds have increased 10 fold! And smell like tacos!")
+      ErrorLogger.log("The winds have increased 10 fold!")
 
-      refute(@logger.empty_log?)
+      refute(ErrorLogger.empty_log?)
     end
   end
 end

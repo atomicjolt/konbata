@@ -13,35 +13,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-require "logger"
+module ErrorLogger
+  LOG_FILEPATH = File.join("canvas", "conversion_errors.log").freeze
 
-class ErrorLogger
-  DEFAULT_LOG_FILEPATH = File.join(
-    "canvas",
-    "conversion_errors_#{Time.now}.log",
-  ).freeze
-
-  def initialize(log_filepath = nil)
-    @log_filepath = log_filepath || DEFAULT_LOG_FILEPATH
-
-    FileUtils.mkdir_p(File.dirname(@log_filepath))
-    File.open(@log_filepath, "w") {}
+  def self.setup
+    FileUtils.mkdir_p(File.dirname(LOG_FILEPATH))
+    File.open(LOG_FILEPATH, "w") {}
   end
 
-  def log_error(message)
-    File.open(@log_filepath, "w+") { |file| file.puts(message) }
+  def self.log(message)
+    File.open(LOG_FILEPATH, "w+") { |file| file.puts(message) }
   end
 
-  def notify_or_remove
+  def self.empty_log?
+    File.read(LOG_FILEPATH).empty?
+  end
+
+  def self.notify_or_remove
     if empty_log?
-      FileUtils.remove_entry_secure(@log_filepath)
+      FileUtils.remove_entry_secure(LOG_FILEPATH)
     else
-      puts "WARNING: There were some conversion errors. Check " \
-      "`#{@log_filepath}` for details."
+      puts "*** WARNING: There were some conversion errors. Check " \
+      "`#{LOG_FILEPATH}` for details. ***"
     end
-  end
-
-  def empty_log?
-    File.read(@log_filepath).empty?
   end
 end
