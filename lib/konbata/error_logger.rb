@@ -16,7 +16,10 @@
 require "logger"
 
 class ErrorLogger
-  DEFAULT_LOG_FILEPATH = File.join("canvas", "conversion_errors.log").freeze
+  DEFAULT_LOG_FILEPATH = File.join(
+    "canvas",
+    "conversion_errors_#{Time.now}.log",
+  ).freeze
 
   def initialize(log_filepath = nil)
     @log_filepath = log_filepath || DEFAULT_LOG_FILEPATH
@@ -29,11 +32,13 @@ class ErrorLogger
     File.open(@log_filepath, "w+") { |file| file.puts(message) }
   end
 
-  def notify_if_errors
-    return if empty_log?
-
-    puts "WARNING: There were some conversion errors. Check " \
-    "`#{@log_filepath}` for details."
+  def notify_or_remove
+    if empty_log?
+      FileUtils.remove_entry_secure(@log_filepath)
+    else
+      puts "WARNING: There were some conversion errors. Check " \
+      "`#{@log_filepath}` for details."
+    end
   end
 
   def empty_log?

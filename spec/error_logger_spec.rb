@@ -18,24 +18,14 @@ require "konbata/error_logger"
 
 describe "ErrorLogger" do
   before do
-    @log_filepath = File.join(Dir.mktmpdir, "conversion_errors.log")
+    @log_filepath = File.join(Dir.mktmpdir, "conversion_errors_#{Time.now}.log")
   end
 
   describe ".initialize" do
-    it "creates a log file if it doesn't exist" do
+    it "creates a log file" do
       ErrorLogger.new(@log_filepath)
 
       assert(File.exist?(@log_filepath))
-    end
-
-    it "clears out the log file contents" do
-      File.open(@log_filepath, "w") do |file|
-        file << "Just some stuff."
-      end
-
-      ErrorLogger.new(@log_filepath)
-
-      assert_empty(File.read(@log_filepath))
     end
   end
 
@@ -50,7 +40,7 @@ describe "ErrorLogger" do
     end
   end
 
-  describe "#notify_if_errors" do
+  describe "#notify_or_remove" do
     before do
       @logger = ErrorLogger.new(@log_filepath)
     end
@@ -59,12 +49,18 @@ describe "ErrorLogger" do
       @logger.log_error("Man overboard! The ship is sinking!")
 
       assert_output(/WARNING: There were some conversion errors/i) do
-        @logger.notify_if_errors
+        @logger.notify_or_remove
       end
     end
 
     it "doesn't notify the user if there weren't errors" do
-      assert_output("") { @logger.notify_if_errors }
+      assert_output("") { @logger.notify_or_remove }
+    end
+
+    it "removes the log file if there weren't errors" do
+      @logger.notify_or_remove
+
+      refute(File.exist?(@log_filepath))
     end
   end
 
