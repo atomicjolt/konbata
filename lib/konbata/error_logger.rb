@@ -22,7 +22,9 @@ module ErrorLogger
   end
 
   def self.log(message)
-    File.open(LOG_FILEPATH, "a") { |file| file.puts("- #{message}") }
+    File.open(LOG_FILEPATH, "a") do |file|
+      file << "#{Time.now} - #{message}\n\n"
+    end
   end
 
   def self.log_missing_file(file, zip_file)
