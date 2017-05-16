@@ -25,7 +25,7 @@ module Konbata
     # Creates a canvas_cc page for @item.
     ##
     def canvas_page
-      @canvas_page ||= Konbata::CanvasPage.create(@item.title, _page_html)
+      @canvas_page ||= Konbata::CanvasPage.create(@item[:title], _page_html)
     end
 
     private
@@ -36,7 +36,7 @@ module Konbata
     ##
     def _primary_pdf
       @primary_pdf ||= begin
-        @item.files.detect do |file|
+        @item[:files].detect do |file|
           file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
         end
       end
@@ -47,7 +47,7 @@ module Konbata
     # version.
     ##
     def _page_html
-      primary_file_path = File.join(@item.directory, @item.primary_file)
+      primary_file_path = File.join(@item[:directory], @item[:primary_file])
 
       return "" unless File.exist?(primary_file_path)
 
