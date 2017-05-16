@@ -51,7 +51,7 @@ module Konbata
           ErrorLogger.log_missing_file(file, zip_path)
           next
         end
-      end
+      end.compact
     end
   end
 end
