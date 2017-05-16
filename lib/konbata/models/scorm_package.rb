@@ -135,8 +135,6 @@ module Konbata
           item_data.files
         end.flatten
 
-        files.select! { |file| @zip.find_entry(file) }
-
         files.map { |file| File.join(@temp_dir, file) }
       end
     end
@@ -158,9 +156,10 @@ module Konbata
       files = resource.search(:file)
 
       filepaths = files.map { |file| file.attr(:href) }
-      Konbata::ZipUtils.extract_files(@filepath, filepaths, @temp_dir)
+      extracted_filepaths =
+        Konbata::ZipUtils.extract_files(@filepath, filepaths, @temp_dir)
 
-      filepaths
+      extracted_filepaths.map(&:last)
     end
   end
 end

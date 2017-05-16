@@ -58,20 +58,6 @@ describe Konbata::ScormPackage do
     it "returns the correct number of images" do
       assert_equal(4, @scorm_package.resource_images.size)
     end
-
-    it "doesn't include images listed in the manifest that aren't in the zip" do
-      scorm_package = Konbata::ScormPackage.new(
-        fixture_path("non_interactive_scorm_inaccurate_manifest_files.zip"),
-      )
-
-      # Volume2/images/image2.jpg is included in the manifest but isn't in the
-      # zip archive.
-      assert(
-        scorm_package.resource_images.none? do |image|
-          image =~ %r{volume2/images/image2.jpg}
-        end,
-      )
-    end
   end
 
   describe "#items" do
