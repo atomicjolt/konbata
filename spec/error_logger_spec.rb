@@ -56,13 +56,22 @@ describe "ErrorLogger" do
     end
 
     it "keeps previous log messages" do
-      message_one = "If anyone can hear me, save us!"
+      message_one = "The winds have increased 10 fold!"
       ErrorLogger.log(message_one)
-      message_two = "We're doomed!"
+      message_two = "And they smell like tacos!"
       ErrorLogger.log(message_two)
 
       assert_includes(File.read(@log_filepath), message_one)
       assert_includes(File.read(@log_filepath), message_two)
+    end
+
+    it "doesn't insert a message if it's already in the log file" do
+      message = "If anyone can hear me, save us!"
+
+      ErrorLogger.log(message)
+      ErrorLogger.log(message)
+
+      refute_match(/#{message}.*#{message}/m, File.read(@log_filepath))
     end
   end
 
@@ -100,7 +109,7 @@ describe "ErrorLogger" do
     end
 
     it "returns false if the log file isn't empty" do
-      ErrorLogger.log("The winds have increased 10 fold!")
+      ErrorLogger.log("We're doomed!")
 
       refute(ErrorLogger.empty_log?)
     end

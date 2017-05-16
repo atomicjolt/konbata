@@ -22,6 +22,8 @@ module ErrorLogger
   end
 
   def self.log(message)
+    return if File.read(LOG_FILEPATH).include?(message) # Don't repeat messages.
+
     File.open(LOG_FILEPATH, "a") do |file|
       file << "#{Time.now} - #{message}\n\n"
     end
