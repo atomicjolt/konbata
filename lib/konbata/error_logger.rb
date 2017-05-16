@@ -37,6 +37,14 @@ module ErrorLogger
     log(message)
   end
 
+  def self.log_no_primary_pdf(item_title, zip_file)
+    message = "A primary PDF could not be found for item \"#{item_title}\" " \
+    "in \"#{File.basename(zip_file)}\". The content associated with that " \
+    "item is likely broken."
+
+    log(message)
+  end
+
   def self.empty_log?
     File.read(LOG_FILEPATH).empty?
   end

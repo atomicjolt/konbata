@@ -36,9 +36,15 @@ module Konbata
     ##
     def _primary_pdf
       @primary_pdf ||= begin
-        @item[:files].detect do |file|
+        primary_pdf = @item[:files].detect do |file|
           file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
         end
+
+        unless primary_pdf
+          ErrorLogger.log_no_primary_pdf(@item[:title], @item[:source_package])
+        end
+
+        primary_pdf
       end
     end
 
