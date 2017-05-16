@@ -37,12 +37,20 @@ module ErrorLogger
     log(message)
   end
 
-  def self.log_no_primary_pdf(item_title, zip_file)
-    message = "A primary PDF could not be found for item \"#{item_title}\" " \
-    "in \"#{File.basename(zip_file)}\". The content associated with that " \
-    "item is likely broken."
+  def self.log_no_primary_file(item_title, zip_file, file_type)
+    message = "A primary #{file_type} could not be found for item " \
+    "\"#{item_title}\" in \"#{File.basename(zip_file)}\". The content " \
+    "associated with that item is likely broken."
 
     log(message)
+  end
+
+  def self.log_no_primary_pdf(item_title, zip_file)
+    log_no_primary_file(item_title, zip_file, "PDF")
+  end
+
+  def self.log_no_primary_html(item_title, zip_file)
+    log_no_primary_file(item_title, zip_file, "HTML file")
   end
 
   def self.empty_log?

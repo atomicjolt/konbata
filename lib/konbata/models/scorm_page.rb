@@ -55,14 +55,18 @@ module Konbata
     def _page_html
       primary_file_path = File.join(@item[:directory], @item[:primary_file])
 
-      return "" unless File.exist?(primary_file_path)
+      if File.exist?(primary_file_path)
+        html = File.read(primary_file_path)
+        html = _remove_script_tags(html)
+        html = _remove_unwanted_images(html)
+        html = _embed_pdf(html)
 
-      html = File.read(primary_file_path)
-      html = _remove_script_tags(html)
-      html = _remove_unwanted_images(html)
-      html = _embed_pdf(html)
+        html
+      else
+        ErrorLogger.log_no_primary_html(@item[:title], @item[:source_package])
 
-      html
+        ""
+      end
     end
 
     ##
