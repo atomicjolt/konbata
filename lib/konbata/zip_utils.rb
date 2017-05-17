@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+require "konbata/error_logger"
+
 module Konbata
   module ZipUtils
     ##
@@ -35,17 +37,21 @@ module Konbata
 
       files.map do |file|
         entry = zip.find_entry(file)
-        next unless entry
 
-        extract_to = File.join(output_dir, file)
+        if entry
+          extract_to = File.join(output_dir, file)
 
-        unless File.exist?(extract_to)
-          FileUtils.mkdir_p(File.join(output_dir, File.dirname(file)))
-          entry.extract(extract_to)
+          unless File.exist?(extract_to)
+            FileUtils.mkdir_p(File.join(output_dir, File.dirname(file)))
+            entry.extract(extract_to)
+          end
+
+          [extract_to, file]
+        else
+          ErrorLogger.log_missing_file(file, zip_path)
+          next
         end
-
-        [extract_to, file]
-      end
+      end.compact
     end
   end
 end

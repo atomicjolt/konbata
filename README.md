@@ -15,7 +15,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>. -->
 
 # Konbata Converter
 
-Konbata converts SCORM packages into Canvas courses. It can generate a .imscc file and also create a Canvas course in a Canvas instance.
+Konbata converts SCORM packages and zipped PDFs into Canvas courses. It can generate an .imscc file and also upload that .imscc to create a course in a Canvas instance.
 
 ## Installation
 
@@ -29,7 +29,7 @@ Create a `konbata.yml` file and add credentials for uploading to Canvas:
 # Found in Account >> Profile >> Generate Access Token
 :canvas_token: <canvas token>
 
-# ID found at specific course url: http://<canvas-url>/accounts/_HERE_
+# ID found at specific course url: http://<canvas-url>/accounts/_ID_
 # This can be :self, :default, or an ID.
 :account_id: <account id>
 
@@ -43,36 +43,46 @@ Create a `konbata.yml` file and add credentials for uploading to Canvas:
 
 ## Usage
 
-Any `.zip` files placed at the top level of the `sources` directory will be processed as SCORM packages.
+Any `.zip` files placed at the top level of the `sources` directory will be processed.
 
-Konbata is designed to process two types of SCORM packages: interactive and non-interactive.
+Konbata is designed to process two types of SCORM packages (interactive and non-interactive) along with zip archives containing PDF files.
 
 Below is a breakdown of how each type is handled.
 
-_For Both Package Types_
+_For Interactive SCORM Packages_
 - During .imscc Creation
   - Create a Canvas course.
   - Add the original SCORM package to the Files section in Canvas.
   - Add any PDF files from the SCORM package to the Files section.
   - Add any images from the SCORM package to Files section.
-- During Upload
-  - For students, hide all tabs except "Home" (and "Assignments" or "Modules")
-  - Add the SCORM package to the SCORM player.
-
-_For Interactive Packages_
-- During .imscc Creation
   - Set default view to “Assignments”.
 - During Upload
+  - Add the SCORM package to the SCORM player.
   - Create an assignment for the SCORM package.
-  - For students, show the “Assignments” tab.
+  - For students, hide all tabs except "Home" and "Assignments".
 
-_For Non-Interactive Packages_
+_For Non-Interactive SCORM Packages_
 - During .imscc Creation
+  - Create a Canvas course.
+  - Add the original SCORM package to the Files section in Canvas.
+  - Add any PDF files from the SCORM package to the Files section.
+  - Add any images from the SCORM package to Files section.
   - Create a Canvas page for each primary PDF file.
   - Add all Canvas pages to a module.
   - Set the default view to “Modules”
 - During Upload
-  - For students, show “Modules” tab.
+  - Add the SCORM package to the SCORM player.
+  - For students, hide all tabs except "Home" and "Modules".
+
+_For Zipped PDFs_
+- During .imscc Creation
+  - Create a Canvas course.
+  - Add all PDFs to the Files section in Canvas.
+  - Create a module item for each PDF file.
+  - Add all module items to a module.
+  - Set the default view to “Modules”
+- During Upload
+  - For students, hide all tabs except "Home" and "Modules".
 
 #### Running
 
@@ -80,9 +90,11 @@ To run Konbata, use the following Rake tasks:
 
 Convert files:
 ```bash
-rake konbata:scorm[interactive]
+rake konbata:convert[interactive]
 # or
-rake konbata:scorm[non_interactive]
+rake konbata:convert[non_interactive]
+# or
+rake konbata:convert[pdfs]
 ```
 
 Upload to Canvas:
@@ -90,14 +102,20 @@ Upload to Canvas:
 rake konbata:upload[interactive]
 # or
 rake konbata:upload[non_interactive]
+# or
+rake konbata:upload[pdfs]
 ```
 
-Delete the entire output folder:
+Delete the entire output folder and log folder:
 ```bash
 rake konbata:clean
 ```
 
 Note: If you are using Zsh as your shell, you will probably need to escape brackets when running these Rake tasks. e.g. `rake konbata:upload\[interactive\]` or `rake 'konbata:upload[interactive]'`. Check [this article](https://robots.thoughtbot.com/how-to-use-arguments-in-a-rake-task) for more details.
+
+#### Errors
+
+If there are errors during processing, an error log is generated and added to the `/log` directory. It logs errors related to when a file is referenced inside the SCORM package manifest but said file doesn't actually exist inside the package or when Konbata expects a certain file in order to generate content but it can't find the file.
 
 ## License
 

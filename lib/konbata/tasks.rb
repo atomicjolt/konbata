@@ -16,6 +16,7 @@
 require "rake"
 require "rake/clean"
 require "konbata"
+require "konbata/error_logger"
 
 ##
 # Creates rake tasks that can be ran from the gem.
@@ -41,7 +42,7 @@ module Konbata
 
     def self.install_tasks
       namespace :konbata do
-        desc "Find and process SCORM packages, accepts 'interactive', " \
+        desc "Find and process zip archives, accepts 'interactive', " \
         "'non_interactive' or 'pdfs' as an argument."
         task :convert, [:type] do |_, args|
           validate_type_arg(args[:type])
@@ -59,10 +60,15 @@ module Konbata
           Konbata.upload_courses(type)
         end
 
-        desc "Destroy output folder."
+        desc "Destroy output and log folders."
         task :clean do
           if Dir.exist?(Konbata::OUTPUT_DIR)
             remove_entry_secure(Konbata::OUTPUT_DIR)
+          end
+
+          log_dir = File.dirname(ErrorLogger::LOG_FILEPATH)
+          if Dir.exist?(log_dir)
+            remove_entry_secure(log_dir)
           end
         end
       end

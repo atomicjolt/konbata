@@ -45,7 +45,7 @@ describe Konbata::ZipUtils do
       assert(File.exist?(File.join(@temp_dir, @file_one)))
     end
 
-    it "returns a tuple of the extracted location and the original file" do
+    it "returns a list of tuples of the extracted and original filepaths" do
       results = Konbata::ZipUtils.extract_files(
         @zip_file_path,
         [@file_one],
@@ -58,9 +58,25 @@ describe Konbata::ZipUtils do
     end
 
     it "doesn't throw an error if a file given doesn't exist in the zip" do
-      files = [@file_one, @fake_file]
+      ErrorLogger.stub(:log, nil) do
+        files = [@file_one, @fake_file]
 
-      Konbata::ZipUtils.extract_files(@zip_file_path, files, @temp_dir)
+        Konbata::ZipUtils.extract_files(@zip_file_path, files, @temp_dir)
+      end
+    end
+
+    it "doesn't return a nonexistent file in the result list" do
+      ErrorLogger.stub(:log, nil) do
+        results = Konbata::ZipUtils.extract_files(
+          @zip_file_path,
+          [@file_one, @fake_file],
+          @temp_dir,
+        )
+
+        expected_results = [[File.join(@temp_dir, @file_one), @file_one]]
+
+        assert_equal(expected_results, results)
+      end
     end
 
     it "doesn't throw an error if given duplicate files" do

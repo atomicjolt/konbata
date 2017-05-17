@@ -25,7 +25,7 @@ module Konbata
     # Creates a canvas_cc page for @item.
     ##
     def canvas_page
-      @canvas_page ||= Konbata::CanvasPage.create(@item.title, _page_html)
+      @canvas_page ||= Konbata::CanvasPage.create(@item[:title], _page_html)
     end
 
     private
@@ -36,9 +36,15 @@ module Konbata
     ##
     def _primary_pdf
       @primary_pdf ||= begin
-        @item.files.detect do |file|
+        primary_pdf = @item[:files].detect do |file|
           file.count(File::SEPARATOR) == 1 && File.extname(file) =~ /\.pdf/i
         end
+
+        unless primary_pdf
+          ErrorLogger.log_no_primary_pdf(@item[:title], @item[:source_package])
+        end
+
+        primary_pdf
       end
     end
 
@@ -47,16 +53,20 @@ module Konbata
     # version.
     ##
     def _page_html
-      primary_file_path = File.join(@item.directory, @item.primary_file)
+      primary_file_path = File.join(@item[:directory], @item[:primary_file])
 
-      return "" unless File.exist?(primary_file_path)
+      if File.exist?(primary_file_path)
+        html = File.read(primary_file_path)
+        html = _remove_script_tags(html)
+        html = _remove_unwanted_images(html)
+        html = _embed_pdf(html)
 
-      html = File.read(primary_file_path)
-      html = _remove_script_tags(html)
-      html = _remove_unwanted_images(html)
-      html = _embed_pdf(html)
+        html
+      else
+        ErrorLogger.log_no_primary_html(@item[:title], @item[:source_package])
 
-      html
+        ""
+      end
     end
 
     ##

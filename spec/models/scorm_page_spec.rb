@@ -18,12 +18,13 @@ require "konbata/models/scorm_page"
 
 describe Konbata::ScormPage do
   before do
-    @item = Struct.new(:title, :directory, :primary_file, :files).new(
-      "Test Page",
-      fixture_path("scorm_page_files"),
-      "Volume1/primary_file.html",
-      ["Volume1/primary_pdf.pdf"],
-    )
+    @item = {
+      source_package: "source_package.zip",
+      title: "Test Page",
+      directory: fixture_path("scorm_page_files"),
+      primary_file: "Volume1/primary_file.html",
+      files: ["Volume1/primary_pdf.pdf"],
+    }
 
     @page = Konbata::ScormPage.new(@item).canvas_page
   end
@@ -34,10 +35,12 @@ describe Konbata::ScormPage do
     end
 
     it "returns an empty string if there is no primary file" do
-      @item.primary_file = "not_here.html"
-      @page_without_primary_file = Konbata::ScormPage.new(@item).canvas_page
+      ErrorLogger.stub(:log, nil) do
+        @item[:primary_file] = "not_here.html"
+        @page_without_primary_file = Konbata::ScormPage.new(@item).canvas_page
 
-      assert(@page_without_primary_file.body.empty?)
+        assert(@page_without_primary_file.body.empty?)
+      end
     end
   end
 
@@ -75,10 +78,12 @@ describe Konbata::ScormPage do
     end
 
     it "doesn't throw an error if there is no primary PDF" do
-      @item.files = []
-      @scorm_page = Konbata::ScormPage.new(@item)
+      ErrorLogger.stub(:log, nil) do
+        @item[:files] = []
+        @scorm_page = Konbata::ScormPage.new(@item)
 
-      @scorm_page.canvas_page
+        @scorm_page.canvas_page
+      end
     end
   end
 end

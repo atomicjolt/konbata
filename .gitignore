@@ -18,6 +18,7 @@
 /output/
 /sources/
 /uploaded/
+/log/
 /spec/examples/
 *.gem
 .idea/

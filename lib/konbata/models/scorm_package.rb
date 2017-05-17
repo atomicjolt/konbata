@@ -67,7 +67,8 @@ module Konbata
     ##
     # Returns a hash of each <item> in the manifest.
     # Keys are the <item> identifier.
-    # Values are a struct including title, directory, primary file and files.
+    # Values are a hash including source SCORM package, title, temp
+    # directory, primary file and a list of all resource files.
     ##
     def items
       @items ||= begin
@@ -76,12 +77,13 @@ module Konbata
           id_ref = itm.attr(:identifierref)
           title = itm.at(:title).text
 
-          items[id] = Struct.new(:title, :directory, :primary_file, :files).new(
-            title,
-            @temp_dir,
-            _item_primary_file(id_ref),
-            _item_files(id_ref),
-          )
+          items[id] = {
+            source_package: @filepath,
+            title: title,
+            directory: @temp_dir,
+            primary_file: _item_primary_file(id_ref),
+            files: _item_files(id_ref),
+          }
         end
       end
     end
@@ -132,10 +134,8 @@ module Konbata
     def _all_resource_files
       @files ||= begin
         files = items.map do |_, item_data|
-          item_data.files
+          item_data[:files]
         end.flatten
-
-        files.select! { |file| @zip.find_entry(file) }
 
         files.map { |file| File.join(@temp_dir, file) }
       end
@@ -158,9 +158,15 @@ module Konbata
       files = resource.search(:file)
 
       filepaths = files.map { |file| file.attr(:href) }
-      Konbata::ZipUtils.extract_files(@filepath, filepaths, @temp_dir)
+      extracted_filepaths =
+        Konbata::ZipUtils.extract_files(@filepath, filepaths, @temp_dir)
 
-      filepaths
+      # ZipUtils.extract_files returns a list of tuples containing the original
+      # filename and the path where the file was extracted to. .extract_files
+      # skips any files not found in the zip file, so we want to use the data
+      # it returns instead of our original `filepaths` list in case `filepaths`
+      # contains non-existent files.
+      extracted_filepaths.map(&:last)
     end
   end
 end

@@ -17,6 +17,7 @@ require "canvas_cc"
 require "zip"
 
 require "konbata/configuration"
+require "konbata/error_logger"
 require "konbata/models/scorm_course"
 require "konbata/models/interactive_scorm_course"
 require "konbata/models/non_interactive_scorm_course"
@@ -46,6 +47,8 @@ module Konbata
   # them to a Canvas .imscc file.
   ##
   def self.convert_zips(type)
+    ErrorLogger.setup
+
     FileUtils.mkdir_p(OUTPUT_DIR)
 
     zip_paths = Dir.glob("#{INPUT_DIR}/*.zip")
@@ -54,6 +57,8 @@ module Konbata
       puts "Converting #{File.basename(zip_path)}"
       convert_zip(zip_path, type)
     end
+
+    ErrorLogger.notify_or_remove
   end
 
   ##
