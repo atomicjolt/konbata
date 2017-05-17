@@ -41,7 +41,7 @@ module Konbata
 
     def self.install_tasks
       namespace :konbata do
-        desc "Find and process SCORM packages, accepts 'interactive', " \
+        desc "Find and process zip archives, accepts 'interactive', " \
         "'non_interactive' or 'pdfs' as an argument."
         task :convert, [:type] do |_, args|
           validate_type_arg(args[:type])
