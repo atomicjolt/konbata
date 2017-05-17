@@ -106,7 +106,7 @@ rake konbata:upload[non_interactive]
 rake konbata:upload[pdfs]
 ```
 
-Delete the entire output folder:
+Delete the entire output folder and log folder:
 ```bash
 rake konbata:clean
 ```

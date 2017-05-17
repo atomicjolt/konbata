@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 module ErrorLogger
-  LOG_FILEPATH = File.join("canvas", "conversion_errors.log").freeze
+  LOG_FILEPATH = File.join("log", "conversion_errors.log").freeze
 
   ##
   # Creates an empty log file.

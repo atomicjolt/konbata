@@ -16,6 +16,7 @@
 require "rake"
 require "rake/clean"
 require "konbata"
+require "konbata/error_logger"
 
 ##
 # Creates rake tasks that can be ran from the gem.
@@ -59,10 +60,15 @@ module Konbata
           Konbata.upload_courses(type)
         end
 
-        desc "Destroy output folder."
+        desc "Destroy output and log folders."
         task :clean do
           if Dir.exist?(Konbata::OUTPUT_DIR)
             remove_entry_secure(Konbata::OUTPUT_DIR)
+          end
+
+          log_dir = File.dirname(ErrorLogger::LOG_FILEPATH)
+          if Dir.exist?(log_dir)
+            remove_entry_secure(log_dir)
           end
         end
       end
