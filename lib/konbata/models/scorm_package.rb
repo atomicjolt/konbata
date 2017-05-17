@@ -161,6 +161,11 @@ module Konbata
       extracted_filepaths =
         Konbata::ZipUtils.extract_files(@filepath, filepaths, @temp_dir)
 
+      # ZipUtils.extract_files returns a list of tuples containing the original
+      # filename and the path where the file was extracted to. .extract_files
+      # skips any files not found in the zip file, so we want to use the data
+      # it returns instead of our original `filepaths` list in case `filepaths`
+      # contains non-existent files.
       extracted_filepaths.map(&:last)
     end
   end
